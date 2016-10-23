@@ -6,26 +6,28 @@
             [tea-alert.scheduler :refer [create-scheduler]])
   (:gen-class :main true))
 
+(def CONFIGURATION_ITEMS
+  [:mailjet-key
+   :mailjet-secret
+   :sender-email
+   :recipient-name
+   :recipient-email])
+
+(defn env-var
+  [key]
+  (-> key name clojure.string/upper-case (clojure.string/replace #"-" "_")))
+
 (defn read-config
   []
-  {:mailjet-key     (System/getenv "MAILJET_KEY")
-   :mailjet-secret  (System/getenv "MAILJET_SECRET")
-   :sender-email    (System/getenv "SENDER_EMAIL")
-   :recipient-name  (or
-                     (System/getenv "RECIPIENT_NAME")
-                     "Anonymous")
-   :recipient-email (System/getenv "RECIPIENT_EMAIL")})
-
+  (reduce #(assoc %1 %2 (-> %2 env-var System/getenv)) {} CONFIGURATION_ITEMS))
 
 (defn validate
   [config]
-  (reduce #(if-let [val (get config %2)]
-             %1
-             (conj %1 (str (name %2) " is required."))) [] [:mailjet-key
-                                                            :mailjet-secret
-                                                            :sender-email
-                                                            :recipient-name
-                                                            :recipient-email]))
+  (reduce
+   #(if-let [val (get config %2)]
+      %1
+      (conj %1 (str (env-var %2) " is not set")))
+   [] CONFIGURATION_ITEMS))
 
 (defn create-system
   [config]
