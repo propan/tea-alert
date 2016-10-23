@@ -1,50 +1,56 @@
 (ns tea-alert.storage
   (:require [com.stuartsierra.component :as component]
-            [taoensso.carmine :as car :refer (wcar)]))
+            [clojure.java.io :as io]))
 
-(defn- long-or-zero
-  [str]
+(defn load-data
+  []
   (try
-    (Long/parseLong str)
+    (with-open [r (io/reader "./ta.db")]
+      (read (java.io.PushbackReader. r)))
     (catch Exception e
-      0)))
+      {})))
 
-(defrecord RedisStorage [host port db connection]
+(defn save-data
+  [data]
+  (->> (pr data)
+       (with-out-str)
+       (spit  "./ta.db"))
+  data)
+
+(defrecord FileStorage [data]
   component/Lifecycle
 
   (start [component]
-    (println (format "Connecting to Redis %s:%s DB:%s" host port db))
-    (let [connection {:pool {} :spec {:host host :port port :db db}}]
-      (assoc component :connection connection)))
+    (assoc component :data (atom (load-data))))
 
-  (stop [{:keys [connection] :as component}]
-    (when-not (nil? connection)
-      (println "Disconnecting from Redis"))
-    (assoc component :connection nil)))
+  (stop [{:keys [data] :as component}]
+    (when-not (nil? data)
+      (save-data @data))
+    (assoc component :data nil)))
 
 (defn create-storage
-  [& {:keys [host port db] :or {host "127.0.0.1" port 6379 db 0}}]
-  (map->RedisStorage {:host host :port port :db db}))
+  []
+  (map->FileStorage {}))
 
 (defn get-next-check
-  [{:keys [connection]}]
-  (if-let [val (wcar connection (car/get "ta:next-check"))]
-    (long-or-zero val)
+  [{:keys [data]}]
+  (if-let [val (:next-check @data)]
+    val
     (System/currentTimeMillis)))
 
 (defn set-next-check
-  [{:keys [connection]} time]
-  (wcar connection (car/set "ta:next-check" time)))
+  [{:keys [data]} time]
+  (swap! data assoc :next-check time)
+  (save-data @data))
 
 (defn read-items
-  [{:keys [connection]} store]
-  (let [key (str "ta:entries:" store)
-        val (wcar connection (car/smembers key))]
+  [{:keys [data]} store]
+  (let [key (keyword (str "entries-" store))
+        val (key @data)]
     (set val)))
 
 (defn write-items
-  [{:keys [connection]} store items]
-  (let [key (str "ta:entries:" store)]
-    (wcar connection
-          (car/del key)
-          (apply car/sadd key items))))
+  [{:keys [data]} store items]
+  (let [key (keyword (str "entries-" store))]
+    (swap! data assoc key items)
+    (save-data @data)))

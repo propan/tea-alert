@@ -6,7 +6,6 @@
                  [enlive "1.1.6"]
                  [org.clojure/core.async "0.2.395"]
                  [com.stuartsierra/component "0.3.1"]
-                 [com.taoensso/carmine "2.15.0"]
 
                  [hiccup "1.0.5"]
                  [com.mailjet/mailjet-client "4.0.5"]]
