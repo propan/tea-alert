@@ -1,5 +1,5 @@
 (ns tea-alert.server
-  (:require [clojure.core.async :as async :refer [chan go-loop <! alt! close!]]
+  (:require [clojure.core.async :as async :refer [chan <!! close!]]
             [com.stuartsierra.component :as component]
             [tea-alert.mailjet :refer [create-email-sender]]
             [tea-alert.storage :as s :refer [create-storage]]
@@ -41,7 +41,7 @@
    :scheduler (component/using
                (create-scheduler :interval 10000)
                [:storage :sender])
-   :storage (create-storage)))
+   :storage   (create-storage)))
 
 (defonce system-instance nil)
 
@@ -55,7 +55,12 @@
         (println "Cannot start the system due to:")
         (doseq [error errors]
           (println error)))
-      (alter-var-root #'system-instance
-                      (fn [_]
-                        (-> (create-system config)
-                            (component/start)))))))
+      (let [exit-ch (chan)]
+        (.addShutdownHook (Runtime/getRuntime) (Thread. #(do
+                                                           (component/stop system-instance)
+                                                           (close! exit-ch))))
+        (alter-var-root #'system-instance
+                        (fn [_]
+                          (-> (create-system config)
+                              (component/start))))
+        (<!! exit-ch)))))
