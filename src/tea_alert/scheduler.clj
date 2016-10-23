@@ -34,10 +34,7 @@
 (defn fetch-listed
   [{:keys [name url parser]}]
   (try
-    (-> (client/get url)
-        (:body)
-        (enlive/html-snippet)
-        (parser))
+    (-> url client/get :body enlive/html-snippet parser)
     (catch Exception e
       (println "Failed to fetch listings from" name ":" e)
       [])))

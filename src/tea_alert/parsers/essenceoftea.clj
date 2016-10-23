@@ -1,19 +1,13 @@
 (ns tea-alert.parsers.essenceoftea
-  (:require [net.cgrand.enlive-html :as enlive]))
-
-(defn- extract
-  [entry selector attr]
-  (-> entry
-      (enlive/select selector)
-      (first)
-      (:attrs)
-      (attr)))
+  (:require [net.cgrand.enlive-html :as enlive]
+            [tea-alert.parsers.helpers :refer [extract-with]]))
 
 (defn- extract-item
   [entry]
-  {:image (extract entry [:.product-image :img] :src)
-   :title (extract entry [:.product-name :a] :title)
-   :url   (extract entry [:.product-name :a] :href)})
+  {:image (extract-with entry [:.product-image :img] #(-> % :attrs :src))
+   :title (extract-with entry [:.product-name :a] #(-> % :attrs :title))
+   :url   (extract-with entry [:.product-name :a] #(-> % :attrs :href))
+   :price (extract-with entry [:.price] #(-> % :content first))})
 
 (defn parse
   [page]
