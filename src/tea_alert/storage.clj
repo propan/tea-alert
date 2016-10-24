@@ -2,30 +2,33 @@
   (:require [com.stuartsierra.component :as component]
             [clojure.java.io :as io]))
 
-(defn load-data
-  []
+(defn- load-data
+  [path]
   (try
-    (with-open [r (io/reader "./ta.db")]
+    (with-open [r (io/reader (str path "/ta.db"))]
       (read (java.io.PushbackReader. r)))
     (catch Exception e
       {})))
 
-(defn save-data
-  [data]
+(defn- save-data
+  [path data]
   (->> (pr data)
        (with-out-str)
-       (spit  "./ta.db"))
+       (spit  (str path "/ta.db")))
   data)
 
-(defrecord FileStorage [data]
+(defrecord FileStorage [db-path data]
   component/Lifecycle
 
   (start [component]
-    (assoc component :data (atom (load-data))))
+    (let [db-path (or (System/getenv "TEA_ALERT_DATA") ".")]
+      (assoc component
+             :data (atom (load-data db-path))
+             :db-path db-path)))
 
-  (stop [{:keys [data] :as component}]
+  (stop [{:keys [db-path data] :as component}]
     (when-not (nil? data)
-      (save-data @data))
+      (save-data db-path @data))
     (assoc component :data nil)))
 
 (defn create-storage
@@ -39,9 +42,9 @@
     (System/currentTimeMillis)))
 
 (defn set-next-check
-  [{:keys [data]} time]
+  [{:keys [db-path data]} time]
   (swap! data assoc :next-check time)
-  (save-data @data))
+  (save-data db-path @data))
 
 (defn read-items
   [{:keys [data]} store]
@@ -50,7 +53,7 @@
     (set val)))
 
 (defn write-items
-  [{:keys [data]} store items]
+  [{:keys [db-path data]} store items]
   (let [key (keyword (str "entries-" store))]
     (swap! data assoc key items)
-    (save-data @data)))
+    (save-data db-path @data)))
