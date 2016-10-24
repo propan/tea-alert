@@ -42,7 +42,7 @@
 
 (defn send-notification
   [{:keys [client from to]} items]
-  (println "Sending a notification to: " (:email to))
+  (println "Sending a notification to: " (:email to) " with " (count items) " items")
   (.post client
          (create-request
           {:from    from

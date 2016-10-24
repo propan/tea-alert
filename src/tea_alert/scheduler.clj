@@ -78,9 +78,11 @@
 (defn check-for-updates
   [storage sender]
   (when (<= (s/get-next-check storage) (System/currentTimeMillis))
+    (println "Crawling web-store pages")
     (let [new-items (mapcat #(process-store storage %) STORES)]
-      (when (seq new-items)
-        (m/send-notification sender new-items)))
+      (if (seq new-items)
+        (m/send-notification sender new-items)
+        (println "No new items are found")))
     (s/set-next-check storage (within-an-hour))))
 
 (defrecord Scheduler [interval storage sender exit-ch]
