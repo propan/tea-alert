@@ -7,6 +7,7 @@
             [tea-alert.parsers.chawangshop :as chawangshop]
             [tea-alert.parsers.essenceoftea :as essenceoftea]
             [tea-alert.parsers.yunnansourcing :as yunnansourcing]
+            [tea-alert.parsers.white2tea :as white2tea]
             [tea-alert.storage :as s]
             [tea-alert.mailjet :as m]))
 
@@ -29,7 +30,12 @@
    {:name   "Yunnan Sourcing"
     :key    "yunnansourcing"
     :url    "http://yunnansourcing.com/en/new-products"
-    :parser yunnansourcing/parse}])
+    :parser yunnansourcing/parse}
+
+   {:name   "White2Tea"
+    :key    "white2tea"
+    :url    "http://white2tea.com"
+    :parser white2tea/parse}])
 
 (defn fetch-listed
   [{:keys [name url parser]}]
