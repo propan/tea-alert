@@ -48,13 +48,13 @@
 ;; 
 
 (defn process-store
-  [storage {:keys [key] :as config}]
+  [storage {:keys [name key] :as config}]
   (let [pitems (s/read-items storage key)
         citems (fetch-listed config)
         nitems (filter (complement #(contains? pitems (md5-hash (:url %)))) citems)]
     (when (seq nitems)
       (s/write-items storage key (->> citems (map :url) (map md5-hash))))
-    nitems))
+    {:store name :items nitems}))
 
 (defn- schedule
   [task interval]
@@ -66,7 +66,7 @@
                      (try
                        (task)
                        (catch Exception e
-                         (println "Failed to execute tast:" e)))
+                         (println "Failed to execute task:" e)))
                      (recur (async/timeout interval)))))
     exit-ch))
 
@@ -79,7 +79,7 @@
   [storage sender]
   (when (<= (s/get-next-check storage) (System/currentTimeMillis))
     (println "Crawling web-store pages")
-    (let [new-items (mapcat #(process-store storage %) STORES)]
+    (let [new-items (map #(process-store storage %) STORES)]
       (if (seq new-items)
         (m/send-notification sender new-items)
         (println "No new items are found")))

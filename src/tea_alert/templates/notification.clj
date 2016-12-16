@@ -17,13 +17,13 @@
    (vec)))
 
 (defn render
-  [recipient items]
+  [recipient store-items]
   (html5
    [:head
     [:title "Tea Alert"]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]]
-   [:body {:width "100%" :bgcolor "#303030" :style "margin: 0;"}
-    [:center {:style "width: 100%; background: #303030;"}
+   [:body {:width "100%" :bgcolor "#ffffff" :style "margin: 0;"}
+    [:center {:style "width: 100%; background: #ffffff;"}
      [:div {:style "max-width: 680px; margin: auto;"}
       (table "max-width: 680px;"
              [:tbody
@@ -50,17 +50,29 @@
                                :style   "font-family: sans-serif; font-size: 14px; padding:5px 9px"}
                           "Price"]]]
                        [:tbody
-                        (for [[index {:keys [price title url]}] (map-indexed vector items)]
-                          (let [border (if (= index (- (count items) 1)) "" "border-bottom:1px dotted #cccccc;")]
-                            [:tr
-                             [:td {:align  "left"
-                                   :valign "top"
-                                   :style  (str "font-family: sans-serif; font-size: 13px; padding:5px 9px;" border)}
-                              (link-to {:style "color: #F07860; text-decoration: none;"} url title)]
-                             [:td {:align  "center"
-                                   :valign "top"
-                                   :style  (str "font-family: sans-serif; font-size: 13px; padding:5px 9px;" border)}
-                              (or price "-")]]))])]]
+                        (apply concat
+                               (for [[pos {:keys [name items]}] (map-indexed vector store-items)]
+                                 (let [header-border (if (= pos 0)
+                                                       "border-bottom:1px solid #eaeaea;"
+                                                       "border-top:1px solid #eaeaea; border-bottom:1px solid #eaeaea;")]
+                                   (into
+                                    [[:tr
+                                      [:th {:align   "left"
+                                            :valign  "center"
+                                            :colspan 2
+                                            :style   (str "font-family: sans-serif; font-size: 13px; padding:5px 9px; background-color: #f9f9f9;" header-border)}
+                                       name]]]
+                                    (for [[index {:keys [price title url]}] (map-indexed vector items)]
+                                      (let [border (if (= index (- (count items) 1)) "" "border-bottom:1px dotted #cccccc;")]
+                                        [:tr
+                                         [:td {:align  "left"
+                                               :valign "top"
+                                               :style  (str "font-family: sans-serif; font-size: 13px; padding:5px 9px;" border)}
+                                          (link-to {:style "color: #F07860; text-decoration: none;"} url title)]
+                                         [:td {:align  "center"
+                                               :valign "top"
+                                               :style  (str "font-family: sans-serif; font-size: 13px; padding:5px 9px;" border)}
+                                          (or price "-")]]))))))])]]
               [:tr
                [:td {:bgcolor "#ffffff" :style "font-family: sans-serif; font-size: 14px; padding: 20px 13px 10px 13px; color: #464646; line-height: 20px;"}
                 [:p {:style "padding: 0 0 5px 0; margin: 0;"}
@@ -69,3 +81,4 @@
                  "Tea Alert."]]]
               [:tr
                [:td {:style "padding: 20px 10px;"}]]])]]]))
+
