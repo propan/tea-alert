@@ -1,20 +1,7 @@
 (ns tea-alert.templates.notification
-  (:require [hiccup.def :refer [defelem]]
+  (:require [tea-alert.templates.elements :refer [table]]
             [hiccup.page :refer [html5]]
             [hiccup.element :refer [link-to]]))
-
-(defelem table
-  [style & body]
-  (->
-   [:table {:role        "presentation"
-            :cellspacing "0"
-            :cellpadding "0"
-            :border      "0"
-            :align       "center"
-            :width       "100%"
-            :style       style}]
-   (concat body)
-   (vec)))
 
 (defn render
   [recipient store-items]
