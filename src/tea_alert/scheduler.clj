@@ -63,7 +63,7 @@
     {:store name :items nitems}))
 
 (defn- schedule
-  [task interval]
+  [task interval error-fn]
   (let [exit-ch (chan)]
     (go-loop [timeout-ch (async/timeout interval)]
       (alt!
@@ -72,7 +72,7 @@
                      (try
                        (task)
                        (catch Exception e
-                         (println "Failed to execute task:" e)))
+                         (error-fn e)))
                      (recur (async/timeout interval)))))
     exit-ch))
 
@@ -91,12 +91,18 @@
         (println "No new items are found")))
     (s/set-next-check storage (within-an-hour))))
 
+(defn handle-task-error
+  [storage sender ex]
+  (println "Failed to execute task:" ex)
+  ;; TODO: throttle emails with errors per shop+error type
+  (m/send-error-alert sender ex))
+
 (defrecord Scheduler [interval storage sender exit-ch]
   component/Lifecycle
 
   (start [component]
     (println (format "Starting scheduler with interval: %dms" interval))
-    (assoc component :exit-ch (schedule #(check-for-updates storage sender) interval)))
+    (assoc component :exit-ch (schedule #(check-for-updates storage sender) interval #(handle-task-error storage sender %))))
 
   (stop [{:keys [exit-ch] :as component}]
     (println "Stopping scheduler")

@@ -1,6 +1,7 @@
 (ns tea-alert.mailjet
   (:require [com.stuartsierra.component :as component]
-            [tea-alert.templates.notification :refer [render]])
+            [tea-alert.templates.notification :as notification]
+            [tea-alert.templates.error-alert :as alert])
   (:import [com.mailjet.client MailjetClient MailjetRequest]
            [com.mailjet.client.resource Contact Email]
            [org.json JSONArray JSONObject]))
@@ -48,4 +49,14 @@
           {:from    from
            :to      to
            :subject (str "Alert: Discovered " (count items) " new items")
-           :html    (render to items)})))
+           :html    (notification/render to items)})))
+
+(defn send-error-alert
+  [{:keys [client from to]} ex]
+  (println "Sending an error alert to: " (:email to))
+  (.post client
+         (create-request
+          {:from    from
+           :to      to
+           :subject "Error: Houston, we've had a problem here."
+           :html    (alert/render ex)})))
