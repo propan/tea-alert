@@ -42,7 +42,8 @@
   (try
     (-> url client/get :body enlive/html-snippet parser)
     (catch Exception e
-      (println "Failed to fetch listings from" name ":" e)
+      ;; TODO: throw the exception to trigger an alert
+      (println "Failed to fetch listings from" name ":" (.getMessage e))
       [])))
 
 (defn md5-hash
@@ -60,7 +61,7 @@
         nitems (filter (complement #(contains? pitems (md5-hash (:url %)))) citems)]
     (when (seq nitems)
       (s/write-items storage key (->> citems (map :url) (map md5-hash))))
-    {:store name :items nitems}))
+    {:name name :items nitems}))
 
 (defn- schedule
   [task interval error-fn]
@@ -85,7 +86,7 @@
   [storage sender]
   (when (<= (s/get-next-check storage) (System/currentTimeMillis))
     (println "Crawling web-store pages")
-    (let [new-items (map #(process-store storage %) STORES)]
+    (let [new-items (->> STORES (map #(process-store storage %)) (filter #(seq (:items %))))]
       (if (seq new-items)
         (m/send-notification sender new-items)
         (println "No new items are found")))
