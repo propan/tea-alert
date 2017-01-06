@@ -6,6 +6,12 @@
            [com.mailjet.client.resource Contact Email]
            [org.json JSONArray JSONObject]))
 
+(defn- count-items
+  [items]
+  (->> items
+       (map #(count (:items %)))
+       (reduce +)))
+
 (defn- create-recipient
   [{:keys [email name]}]
   (doto (JSONObject.)
@@ -43,17 +49,18 @@
 
 (defn send-notification
   [{:keys [client from to]} items]
-  (println "Sending a notification to: " (:email to) " with " (count items) " items")
-  (.post client
-         (create-request
-          {:from    from
-           :to      to
-           :subject (str "Alert: Discovered " (count items) " new items")
-           :html    (notification/render to items)})))
+  (let [item-count (count-items items)]
+    (println "Sending a notification to:" (:email to) "with" item-count "items")
+    (.post client
+           (create-request
+            {:from    from
+             :to      to
+             :subject (str "Alert: Discovered " item-count " new items")
+             :html    (notification/render to items)}))))
 
 (defn send-error-alert
   [{:keys [client from to]} ex]
-  (println "Sending an error alert to: " (:email to))
+  (println "Sending an error alert to:" (:email to))
   (.post client
          (create-request
           {:from    from
