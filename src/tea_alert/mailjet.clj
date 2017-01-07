@@ -65,5 +65,5 @@
          (create-request
           {:from    from
            :to      to
-           :subject "Error: Houston, we've had a problem here."
+           :subject "Error: Houston, we've had a problem here"
            :html    (alert/render ex)})))
