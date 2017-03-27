@@ -32,7 +32,7 @@
     (.property Email/HTMLPART html)
     (.property Email/RECIPIENTS (create-recipients [to]))))
 
-(defrecord MailjetEmailSender [key secret from to client]
+(defrecord MailjetEmailSender [key secret from recipients alert-recipients client]
   component/Lifecycle
 
   (start [component]
@@ -44,26 +44,28 @@
     (assoc component :client nil)))
 
 (defn create-email-sender
-  [key secret from to]
-  (map->MailjetEmailSender {:key key :secret secret :from from :to to}))
+  [key secret from recipients alert-recipients]
+  (map->MailjetEmailSender {:key key :secret secret :from from :recipients recipients :alert-recipients alert-recipients}))
 
 (defn send-notification
-  [{:keys [client from to]} items]
+  [{:keys [client from recipients]} items]
   (let [item-count (count-items items)]
-    (println "Sending a notification to:" (:email to) "with" item-count "items")
+    (doseq [to recipients]
+      (println "Sending a notification to:" (:email to) "with" item-count "items")
+      (.post client
+             (create-request
+              {:from    from
+               :to      to
+               :subject (str "Alert: Discovered " item-count " new items")
+               :html    (notification/render to items)})))))
+
+(defn send-error-alert
+  [{:keys [client from alert-recipients]} ex]
+  (doseq [to alert-recipients]
+    (println "Sending an error alert to:" (:email to))
     (.post client
            (create-request
             {:from    from
              :to      to
-             :subject (str "Alert: Discovered " item-count " new items")
-             :html    (notification/render to items)}))))
-
-(defn send-error-alert
-  [{:keys [client from to]} ex]
-  (println "Sending an error alert to:" (:email to))
-  (.post client
-         (create-request
-          {:from    from
-           :to      to
-           :subject "Error: Houston, we've had a problem here"
-           :html    (alert/render ex)})))
+             :subject "Error: Houston, we've had a problem here"
+             :html    (alert/render ex)}))))

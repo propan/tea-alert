@@ -10,8 +10,8 @@
   [:mailjet-key
    :mailjet-secret
    :sender-email
-   :recipient-name
-   :recipient-email])
+   :recipients
+   :alert-recipients])
 
 (defn env-var
   [key]
@@ -20,6 +20,35 @@
 (defn read-config
   []
   (reduce #(assoc %1 %2 (-> %2 env-var System/getenv)) {} CONFIGURATION_ITEMS))
+
+(defn- is-valid-address?
+  [address]
+  (try
+    (do
+      (.validate address)
+      true)
+    (catch javax.mail.internet.AddressException ex
+      (println "Ignoring '" (.toString address) "' as an invalid email address.")
+      false)))
+
+(defn- parse-recipients
+  [str]
+  (->> str
+       (javax.mail.internet.InternetAddress/parse)
+       (filter is-valid-address?)
+       (map (fn [u] {:name  (or (.getPersonal u) "sweetheart")
+                    :email (.getAddress u)}))))
+
+(defn- not-empty-or-nil
+  [xs] (when (seq xs) xs))
+
+(defn- process-config
+  [{:keys [recipients alert-recipients] :as config}]
+  (assoc config
+         :recipients       (when recipients
+                             (-> recipients parse-recipients not-empty-or-nil))
+         :alert-recipients (when alert-recipients
+                             (-> alert-recipients parse-recipients not-empty-or-nil))))
 
 (defn validate
   [config]
@@ -36,8 +65,8 @@
                (:mailjet-key config)
                (:mailjet-secret config)
                (:sender-email config)
-               {:name  (:recipient-name config)
-                :email (:recipient-email config)})
+               (:recipients config)
+               (:alert-recipients config))
    :scheduler (component/using
                (create-scheduler :interval 10000)
                [:storage :sender])
@@ -48,7 +77,7 @@
 (defn -main
   "The entry-point for 'lein run'"
   [& args]
-  (let [config (read-config)
+  (let [config (-> (read-config) process-config)
         errors (validate config)]
     (if (seq errors)
       (do

@@ -8,6 +8,7 @@
                  [com.stuartsierra/component "0.3.1"]
 
                  [hiccup "1.0.5"]
+                 [javax.mail/mail "1.4.7"]
                  [com.mailjet/mailjet-client "4.0.5"]]
 
   :main tea-alert.server
