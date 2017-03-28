@@ -1,4 +1,4 @@
-# tea-alert
+# tea-alert [![Build Status](https://travis-ci.org/propan/tea-alert.svg?branch=master)](https://travis-ci.org/propan/tea-alert)
 
 a notification system that informs you when new stuff is up for sale in your favourite tea store
 
