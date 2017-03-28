@@ -1,0 +1,880 @@
+<!DOCTYPE html> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><script type="text/javascript">(window.NREUM||(NREUM={})).loader_config={xpid:"Uw8GWFdaGwYEUVZUAwQ="};window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){var o=e[n]={exports:{}};t[n][0].call(o.exports,function(e){var o=t[n][1][e];return r(o||e)},o,o.exports)}return e[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(t,e,n){function r(t){try{c.console&&console.log(t)}catch(e){}}var o,i=t("ee"),a=t(15),c={};try{o=localStorage.getItem("__nr_flags").split(","),console&&"function"==typeof console.log&&(c.console=!0,o.indexOf("dev")!==-1&&(c.dev=!0),o.indexOf("nr_dev")!==-1&&(c.nrDev=!0))}catch(s){}c.nrDev&&i.on("internal-error",function(t){r(t.stack)}),c.dev&&i.on("fn-err",function(t,e,n){r(n.stack)}),c.dev&&(r("NR AGENT IN DEVELOPMENT MODE"),r("flags: "+a(c,function(t,e){return t}).join(", ")))},{}],2:[function(t,e,n){function r(t,e,n,r,o){try{d?d-=1:i("err",[o||new UncaughtException(t,e,n)])}catch(c){try{i("ierr",[c,(new Date).getTime(),!0])}catch(s){}}return"function"==typeof f&&f.apply(this,a(arguments))}function UncaughtException(t,e,n){this.message=t||"Uncaught error with no additional information",this.sourceURL=e,this.line=n}function o(t){i("err",[t,(new Date).getTime()])}var i=t("handle"),a=t(16),c=t("ee"),s=t("loader"),f=window.onerror,u=!1,d=0;s.features.err=!0,t(1),window.onerror=r;try{throw new Error}catch(l){"stack"in l&&(t(8),t(7),"addEventListener"in window&&t(5),s.xhrWrappable&&t(9),u=!0)}c.on("fn-start",function(t,e,n){u&&(d+=1)}),c.on("fn-err",function(t,e,n){u&&(this.thrown=!0,o(n))}),c.on("fn-end",function(){u&&!this.thrown&&d>0&&(d-=1)}),c.on("internal-error",function(t){i("ierr",[t,(new Date).getTime(),!0])})},{}],3:[function(t,e,n){t("loader").features.ins=!0},{}],4:[function(t,e,n){function r(t){}if(window.performance&&window.performance.timing&&window.performance.getEntriesByType){var o=t("ee"),i=t("handle"),a=t(8),c=t(7),s="learResourceTimings",f="addEventListener",u="resourcetimingbufferfull",d="bstResource",l="resource",p="-start",h="-end",m="fn"+p,w="fn"+h,v="bstTimer",y="pushState";t("loader").features.stn=!0,t(6);var g=NREUM.o.EV;o.on(m,function(t,e){var n=t[0];n instanceof g&&(this.bstStart=Date.now())}),o.on(w,function(t,e){var n=t[0];n instanceof g&&i("bst",[n,e,this.bstStart,Date.now()])}),a.on(m,function(t,e,n){this.bstStart=Date.now(),this.bstType=n}),a.on(w,function(t,e){i(v,[e,this.bstStart,Date.now(),this.bstType])}),c.on(m,function(){this.bstStart=Date.now()}),c.on(w,function(t,e){i(v,[e,this.bstStart,Date.now(),"requestAnimationFrame"])}),o.on(y+p,function(t){this.time=Date.now(),this.startPath=location.pathname+location.hash}),o.on(y+h,function(t){i("bstHist",[location.pathname+location.hash,this.startPath,this.time])}),f in window.performance&&(window.performance["c"+s]?window.performance[f](u,function(t){i(d,[window.performance.getEntriesByType(l)]),window.performance["c"+s]()},!1):window.performance[f]("webkit"+u,function(t){i(d,[window.performance.getEntriesByType(l)]),window.performance["webkitC"+s]()},!1)),document[f]("scroll",r,!1),document[f]("keypress",r,!1),document[f]("click",r,!1)}},{}],5:[function(t,e,n){function r(t){for(var e=t;e&&!e.hasOwnProperty(u);)e=Object.getPrototypeOf(e);e&&o(e)}function o(t){c.inPlace(t,[u,d],"-",i)}function i(t,e){return t[1]}var a=t("ee").get("events"),c=t(17)(a,!0),s=t("gos"),f=XMLHttpRequest,u="addEventListener",d="removeEventListener";e.exports=a,"getPrototypeOf"in Object?(r(document),r(window),r(f.prototype)):f.prototype.hasOwnProperty(u)&&(o(window),o(f.prototype)),a.on(u+"-start",function(t,e){var n=t[1],r=s(n,"nr@wrapped",function(){function t(){if("function"==typeof n.handleEvent)return n.handleEvent.apply(n,arguments)}var e={object:t,"function":n}[typeof n];return e?c(e,"fn-",null,e.name||"anonymous"):n});this.wrapped=t[1]=r}),a.on(d+"-start",function(t){t[1]=this.wrapped||t[1]})},{}],6:[function(t,e,n){var r=t("ee").get("history"),o=t(17)(r);e.exports=r,o.inPlace(window.history,["pushState","replaceState"],"-")},{}],7:[function(t,e,n){var r=t("ee").get("raf"),o=t(17)(r),i="equestAnimationFrame";e.exports=r,o.inPlace(window,["r"+i,"mozR"+i,"webkitR"+i,"msR"+i],"raf-"),r.on("raf-start",function(t){t[0]=o(t[0],"fn-")})},{}],8:[function(t,e,n){function r(t,e,n){t[0]=a(t[0],"fn-",null,n)}function o(t,e,n){this.method=n,this.timerDuration="number"==typeof t[1]?t[1]:0,t[0]=a(t[0],"fn-",this,n)}var i=t("ee").get("timer"),a=t(17)(i),c="setTimeout",s="setInterval",f="clearTimeout",u="-start",d="-";e.exports=i,a.inPlace(window,[c,"setImmediate"],c+d),a.inPlace(window,[s],s+d),a.inPlace(window,[f,"clearImmediate"],f+d),i.on(s+u,r),i.on(c+u,o)},{}],9:[function(t,e,n){function r(t,e){d.inPlace(e,["onreadystatechange"],"fn-",c)}function o(){var t=this,e=u.context(t);t.readyState>3&&!e.resolved&&(e.resolved=!0,u.emit("xhr-resolved",[],t)),d.inPlace(t,w,"fn-",c)}function i(t){v.push(t),h&&(g=-g,b.data=g)}function a(){for(var t=0;t<v.length;t++)r([],v[t]);v.length&&(v=[])}function c(t,e){return e}function s(t,e){for(var n in t)e[n]=t[n];return e}t(5);var f=t("ee"),u=f.get("xhr"),d=t(17)(u),l=NREUM.o,p=l.XHR,h=l.MO,m="readystatechange",w=["onload","onerror","onabort","onloadstart","onloadend","onprogress","ontimeout"],v=[];e.exports=u;var y=window.XMLHttpRequest=function(t){var e=new p(t);try{u.emit("new-xhr",[e],e),e.addEventListener(m,o,!1)}catch(n){try{u.emit("internal-error",[n])}catch(r){}}return e};if(s(p,y),y.prototype=p.prototype,d.inPlace(y.prototype,["open","send"],"-xhr-",c),u.on("send-xhr-start",function(t,e){r(t,e),i(e)}),u.on("open-xhr-start",r),h){var g=1,b=document.createTextNode(g);new h(a).observe(b,{characterData:!0})}else f.on("fn-end",function(t){t[0]&&t[0].type===m||a()})},{}],10:[function(t,e,n){function r(t){var e=this.params,n=this.metrics;if(!this.ended){this.ended=!0;for(var r=0;r<d;r++)t.removeEventListener(u[r],this.listener,!1);if(!e.aborted){if(n.duration=(new Date).getTime()-this.startTime,4===t.readyState){e.status=t.status;var i=o(t,this.lastSize);if(i&&(n.rxSize=i),this.sameOrigin){var a=t.getResponseHeader("X-NewRelic-App-Data");a&&(e.cat=a.split(", ").pop())}}else e.status=0;n.cbTime=this.cbTime,f.emit("xhr-done",[t],t),c("xhr",[e,n,this.startTime])}}}function o(t,e){var n=t.responseType;if("json"===n&&null!==e)return e;var r="arraybuffer"===n||"blob"===n||"json"===n?t.response:t.responseText;return h(r)}function i(t,e){var n=s(e),r=t.params;r.host=n.hostname+":"+n.port,r.pathname=n.pathname,t.sameOrigin=n.sameOrigin}var a=t("loader");if(a.xhrWrappable){var c=t("handle"),s=t(11),f=t("ee"),u=["load","error","abort","timeout"],d=u.length,l=t("id"),p=t(14),h=t(13),m=window.XMLHttpRequest;a.features.xhr=!0,t(9),f.on("new-xhr",function(t){var e=this;e.totalCbs=0,e.called=0,e.cbTime=0,e.end=r,e.ended=!1,e.xhrGuids={},e.lastSize=null,p&&(p>34||p<10)||window.opera||t.addEventListener("progress",function(t){e.lastSize=t.loaded},!1)}),f.on("open-xhr-start",function(t){this.params={method:t[0]},i(this,t[1]),this.metrics={}}),f.on("open-xhr-end",function(t,e){"loader_config"in NREUM&&"xpid"in NREUM.loader_config&&this.sameOrigin&&e.setRequestHeader("X-NewRelic-ID",NREUM.loader_config.xpid)}),f.on("send-xhr-start",function(t,e){var n=this.metrics,r=t[0],o=this;if(n&&r){var i=h(r);i&&(n.txSize=i)}this.startTime=(new Date).getTime(),this.listener=function(t){try{"abort"===t.type&&(o.params.aborted=!0),("load"!==t.type||o.called===o.totalCbs&&(o.onloadCalled||"function"!=typeof e.onload))&&o.end(e)}catch(n){try{f.emit("internal-error",[n])}catch(r){}}};for(var a=0;a<d;a++)e.addEventListener(u[a],this.listener,!1)}),f.on("xhr-cb-time",function(t,e,n){this.cbTime+=t,e?this.onloadCalled=!0:this.called+=1,this.called!==this.totalCbs||!this.onloadCalled&&"function"==typeof n.onload||this.end(n)}),f.on("xhr-load-added",function(t,e){var n=""+l(t)+!!e;this.xhrGuids&&!this.xhrGuids[n]&&(this.xhrGuids[n]=!0,this.totalCbs+=1)}),f.on("xhr-load-removed",function(t,e){var n=""+l(t)+!!e;this.xhrGuids&&this.xhrGuids[n]&&(delete this.xhrGuids[n],this.totalCbs-=1)}),f.on("addEventListener-end",function(t,e){e instanceof m&&"load"===t[0]&&f.emit("xhr-load-added",[t[1],t[2]],e)}),f.on("removeEventListener-end",function(t,e){e instanceof m&&"load"===t[0]&&f.emit("xhr-load-removed",[t[1],t[2]],e)}),f.on("fn-start",function(t,e,n){e instanceof m&&("onload"===n&&(this.onload=!0),("load"===(t[0]&&t[0].type)||this.onload)&&(this.xhrCbStart=(new Date).getTime()))}),f.on("fn-end",function(t,e){this.xhrCbStart&&f.emit("xhr-cb-time",[(new Date).getTime()-this.xhrCbStart,this.onload,e],e)})}},{}],11:[function(t,e,n){e.exports=function(t){var e=document.createElement("a"),n=window.location,r={};e.href=t,r.port=e.port;var o=e.href.split("://");!r.port&&o[1]&&(r.port=o[1].split("/")[0].split("@").pop().split(":")[1]),r.port&&"0"!==r.port||(r.port="https"===o[0]?"443":"80"),r.hostname=e.hostname||n.hostname,r.pathname=e.pathname,r.protocol=o[0],"/"!==r.pathname.charAt(0)&&(r.pathname="/"+r.pathname);var i=!e.protocol||":"===e.protocol||e.protocol===n.protocol,a=e.hostname===document.domain&&e.port===n.port;return r.sameOrigin=i&&(!e.hostname||a),r}},{}],12:[function(t,e,n){function r(){}function o(t,e,n){return function(){return i(t,[(new Date).getTime()].concat(c(arguments)),e?null:this,n),e?void 0:this}}var i=t("handle"),a=t(15),c=t(16),s=t("ee").get("tracer"),f=NREUM;"undefined"==typeof window.newrelic&&(newrelic=f);var u=["setPageViewName","setCustomAttribute","setErrorHandler","finished","addToTrace","inlineHit"],d="api-",l=d+"ixn-";a(u,function(t,e){f[e]=o(d+e,!0,"api")}),f.addPageAction=o(d+"addPageAction",!0),f.setCurrentRouteName=o(d+"routeName",!0),e.exports=newrelic,f.interaction=function(){return(new r).get()};var p=r.prototype={createTracer:function(t,e){var n={},r=this,o="function"==typeof e;return i(l+"tracer",[Date.now(),t,n],r),function(){if(s.emit((o?"":"no-")+"fn-start",[Date.now(),r,o],n),o)try{return e.apply(this,arguments)}finally{s.emit("fn-end",[Date.now()],n)}}}};a("setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(t,e){p[e]=o(l+e)}),newrelic.noticeError=function(t){"string"==typeof t&&(t=new Error(t)),i("err",[t,(new Date).getTime()])}},{}],13:[function(t,e,n){e.exports=function(t){if("string"==typeof t&&t.length)return t.length;if("object"==typeof t){if("undefined"!=typeof ArrayBuffer&&t instanceof ArrayBuffer&&t.byteLength)return t.byteLength;if("undefined"!=typeof Blob&&t instanceof Blob&&t.size)return t.size;if(!("undefined"!=typeof FormData&&t instanceof FormData))try{return JSON.stringify(t).length}catch(e){return}}}},{}],14:[function(t,e,n){var r=0,o=navigator.userAgent.match(/Firefox[\/\s](\d+\.\d+)/);o&&(r=+o[1]),e.exports=r},{}],15:[function(t,e,n){function r(t,e){var n=[],r="",i=0;for(r in t)o.call(t,r)&&(n[i]=e(r,t[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],16:[function(t,e,n){function r(t,e,n){e||(e=0),"undefined"==typeof n&&(n=t?t.length:0);for(var r=-1,o=n-e||0,i=Array(o<0?0:o);++r<o;)i[r]=t[e+r];return i}e.exports=r},{}],17:[function(t,e,n){function r(t){return!(t&&t instanceof Function&&t.apply&&!t[a])}var o=t("ee"),i=t(16),a="nr@original",c=Object.prototype.hasOwnProperty,s=!1;e.exports=function(t,e){function n(t,e,n,o){function nrWrapper(){var r,a,c,s;try{a=this,r=i(arguments),c="function"==typeof n?n(r,a):n||{}}catch(f){l([f,"",[r,a,o],c])}u(e+"start",[r,a,o],c);try{return s=t.apply(a,r)}catch(d){throw u(e+"err",[r,a,d],c),d}finally{u(e+"end",[r,a,s],c)}}return r(t)?t:(e||(e=""),nrWrapper[a]=t,d(t,nrWrapper),nrWrapper)}function f(t,e,o,i){o||(o="");var a,c,s,f="-"===o.charAt(0);for(s=0;s<e.length;s++)c=e[s],a=t[c],r(a)||(t[c]=n(a,f?c+o:o,i,c))}function u(n,r,o){if(!s||e){var i=s;s=!0;try{t.emit(n,r,o)}catch(a){l([a,n,r,o])}s=i}}function d(t,e){if(Object.defineProperty&&Object.keys)try{var n=Object.keys(t);return n.forEach(function(n){Object.defineProperty(e,n,{get:function(){return t[n]},set:function(e){return t[n]=e,e}})}),e}catch(r){l([r])}for(var o in t)c.call(t,o)&&(e[o]=t[o]);return e}function l(e){try{t.emit("internal-error",e)}catch(n){}}return t||(t=o),n.inPlace=f,n.flag=a,n}},{}],ee:[function(t,e,n){function r(){}function o(t){function e(t){return t&&t instanceof r?t:t?s(t,c,i):i()}function n(n,r,o){if(!l.aborted){t&&t(n,r,o);for(var i=e(o),a=h(n),c=a.length,s=0;s<c;s++)a[s].apply(i,r);var f=u[y[n]];return f&&f.push([g,n,r,i]),i}}function p(t,e){v[t]=h(t).concat(e)}function h(t){return v[t]||[]}function m(t){return d[t]=d[t]||o(n)}function w(t,e){f(t,function(t,n){e=e||"feature",y[n]=e,e in u||(u[e]=[])})}var v={},y={},g={on:p,emit:n,get:m,listeners:h,context:e,buffer:w,abort:a,aborted:!1};return g}function i(){return new r}function a(){(u.api||u.feature)&&(l.aborted=!0,u=l.backlog={})}var c="nr@context",s=t("gos"),f=t(15),u={},d={},l=e.exports=o();l.backlog=u},{}],gos:[function(t,e,n){function r(t,e,n){if(o.call(t,e))return t[e];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(t,e,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return t[e]=r,r}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],handle:[function(t,e,n){function r(t,e,n,r){o.buffer([t],r),o.emit(t,e,n)}var o=t("ee").get("handle");e.exports=r,r.ee=o},{}],id:[function(t,e,n){function r(t){var e=typeof t;return!t||"object"!==e&&"function"!==e?-1:t===window?0:a(t,i,function(){return o++})}var o=1,i="nr@id",a=t("gos");e.exports=r},{}],loader:[function(t,e,n){function r(){if(!b++){var t=g.info=NREUM.info,e=d.getElementsByTagName("script")[0];if(setTimeout(f.abort,3e4),!(t&&t.licenseKey&&t.applicationID&&e))return f.abort();s(v,function(e,n){t[e]||(t[e]=n)}),c("mark",["onload",a()],null,"api");var n=d.createElement("script");n.src="https://"+t.agent,e.parentNode.insertBefore(n,e)}}function o(){"complete"===d.readyState&&i()}function i(){c("mark",["domContent",a()],null,"api")}function a(){return(new Date).getTime()}var c=t("handle"),s=t(15),f=t("ee"),u=window,d=u.document,l="addEventListener",p="attachEvent",h=u.XMLHttpRequest,m=h&&h.prototype;NREUM.o={ST:setTimeout,CT:clearTimeout,XHR:h,REQ:u.Request,EV:u.Event,PR:u.Promise,MO:u.MutationObserver},t(12);var w=""+location,v={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-998.min.js"},y=h&&m&&m[l]&&!/CriOS/.test(navigator.userAgent),g=e.exports={offset:a(),origin:w,features:{},xhrWrappable:y};d[l]?(d[l]("DOMContentLoaded",i,!1),u[l]("load",r,!1)):(d[p]("onreadystatechange",o),u[p]("onload",r)),c("mark",["firstbyte",a()],null,"api");var b=0},{}]},{},["loader",2,10,4,3]);</script>
+<meta charset="utf-8">
+<title>New Products - High quality, handmade teas -  The Essence of Tea</title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="robots" content="INDEX,FOLLOW" />
+<meta name="viewport" content="width=device-width">
+
+<link rel="icon" href="https://www.essenceoftea.com/media/favicon/default/favicon_1.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="https://www.essenceoftea.com/media/favicon/default/favicon_1.ico" type="image/x-icon" />
+
+<!--[if lt IE 7]>
+<script type="text/javascript">
+//<![CDATA[
+    var BLANK_URL = 'https://www.essenceoftea.com/js/blank.html';
+    var BLANK_IMG = 'https://www.essenceoftea.com/js/spacer.gif';
+//]]>
+</script>
+<![endif]-->
+
+
+<link rel="stylesheet" type="text/css" href="https://www.essenceoftea.com/skin/frontend/base/default/css/tm/ajaxpro.css" media="all" />
+<link rel="stylesheet" type="text/css" href="https://www.essenceoftea.com/skin/frontend/default/essence2/css/app.css" media="all" />
+<script type="text/javascript" src="https://www.essenceoftea.com/js/prototype/prototype.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/js/lib/ccard.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/js/prototype/validation.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/js/scriptaculous/builder.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/js/varien/js.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/js/varien/form.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/js/varien/menu.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/js/mage/translate.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/js/mage/cookies.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/js/mage/captcha.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/base/default/js/tm/ajaxpro.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/base/default/js/tm/ajaxpro/config.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/base/default/js/tm/ajaxpro/message.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/base/default/js/tm/ajaxpro/spinner.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/base/default/js/tm/ajaxpro/opacity.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/base/default/js/tm/ajaxpro/catalog/product/compare.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/base/default/js/tm/ajaxpro/catalog/product/view.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/base/default/js/tm/ajaxpro/checkout/cart.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/base/default/js/tm/ajaxpro/catalog/category/view.js"></script>
+<link href="https://www.essenceoftea.com/rss/catalog/new/store_id/1/" title="New Products" rel="alternate" type="application/rss+xml" />
+<!--[if lt IE 8]>
+<link rel="stylesheet" type="text/css" href="https://www.essenceoftea.com/skin/frontend/default/default/css/styles-ie.css" media="all" />
+<![endif]-->
+<!--[if lt IE 7]>
+<script type="text/javascript" src="https://www.essenceoftea.com/js/lib/ds-sleight.js"></script>
+<script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/base/default/js/ie6.js"></script>
+<![endif]-->
+
+<script type="text/javascript">
+//<![CDATA[
+Mage.Cookies.path     = '/';
+Mage.Cookies.domain   = '.www.essenceoftea.com';
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+optionalZipCountries = [];
+//]]>
+</script>
+            <!-- BEGIN GOOGLE ANALYTICS CODE -->
+        <script type="text/javascript">
+        //<![CDATA[
+            var _gaq = _gaq || [];
+            
+_gaq.push(['_setAccount', 'UA-12393358-1']);
+
+_gaq.push(['_trackPageview']);
+            
+            (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+
+        //]]>
+        </script>
+        <!-- END GOOGLE ANALYTICS CODE -->
+    
+<link rel="canonical" href="http://www.essenceoftea.com/new/" />
+<!-- Google CDN -->
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script><script type="text/javascript">jQuery.noConflict();</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+<!-- Google Fonts -->
+<link href="//fonts.googleapis.com/css?family=Lato:200,400,700italic,400italic|Raleway:400,100,700" rel="stylesheet">
+
+<script type="text/javascript">//<![CDATA[
+        var Translator = new Translate([]);
+        //]]></script><!-- Added by Lexity. DO NOT REMOVE/EDIT -->
+
+<script type="text/javascript">
+(function(d, w) {
+  var x = d.getElementsByTagName('SCRIPT')[0];
+  var g = d.createElement('SCRIPT');
+  g.type = 'text/javascript';
+  g.async = true;
+  g.src = ('https:' == d.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  x.parentNode.insertBefore(g, x);
+  var f = function () {
+    var s = d.createElement('SCRIPT');
+    s.type = 'text/javascript';
+    s.async = true;
+    s.src = "//np.lexity.com/89435b96";
+    x.parentNode.insertBefore(s, x);
+  };
+  w.attachEvent ? w.attachEvent('onload', f) : w.addEventListener('load', f, false);
+}(document, window));
+</script>
+<!-- End of addition by Lexity. DO NOT REMOVE/EDIT -->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-12393358-1']);
+  _gaq.push(['_setDomainName', 'essenceoftea.com']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/default/essence2/js/menu-collapse.js"></script>
+</head>
+
+<body class=" cms-page-view cms-new cms-new">
+<div id="top_strip"></div>
+
+
+<!--[if lt IE 7]>
+    <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+
+
+
+
+<!--Site content-->
+<!-- ajaxpro_top.links_start -->
+<div id="toplinks" class="row">
+    <!--<div  class="large-5 large-offset-7 columns">-->
+                        <ul class="links">
+                                                                                 <!--MY ACCOUNT/LOGIN -->
+                            <li>
+                                <a rel="nofollow" href="https://www.essenceoftea.com/customer/account/" title="My Account" >
+                                    <i class="foundicon-settings"></i>
+                                </a>
+                            </li>
+                                         
+                                                                 
+                                                                                <!-- CART/CHECKOUT -->
+                            <li>
+                                                                                                                                               <a rel="nofollow" href="/firecheckout" class="emptyCart" title="My Cart" class="top-link-cart">
+                                            <i class="foundicon-cart">
+                                                <span class='icon-text'>
+                                                                                                    </span>
+                                            </i>
+                                        </a>
+                                     
+                                                            </li>
+                                                    <!--<li >-->
+                                <!--<a href="https://www.essenceoftea.com/checkout/cart/" title="My Cart" class="top-link-cart">My Cart</a>-->
+                            <!--</li>-->
+                                         
+                                                                     
+                                                                     
+                    </ul>
+        
+            <!--</div>-->
+</div>
+
+<!-- ajaxpro_top.links_end -->
+<header>
+        <div class="row nav-row">
+                        <div id=logo><a href="/">The Essence of Tea</a></div>
+
+                        <nav class=main-menu>
+                                <ul>
+                                    <li><a class=who-are-we href="/who-are-we">Who Are We</a></li>
+                                    <li><a href="#" class="open" id="menuselect1">Our Teas</a></li>
+                                    <li><a href="#" class="open" id="menuselect2">Teaware</a></li>
+                                    <li><a href="/new/">New</a></li>
+                                    <li class=split> <a href="/blog">Blog</a></li>
+                                    <li><a href="#" data-reveal-id="contactModal" data-reveal-ajax="https://www.essenceoftea.com/skin/frontend/default/essence2/contact/contact-us.php">Contact</a></li>
+                                </ul>
+                        </nav>
+        </div>
+        <div class="row remove-bottom">
+                         <!-- Tea Menu -->
+                        <div class="menu" id="tea_menu">
+                            <nav class=submenu>
+                                <ul>
+                                    <li> <a href="/tea/puerh-tea.html" class="submenu1">Puerh Tea</a> </li>
+                                    <li> <a href="/tea/oolong-tea/wuyi-yancha-rock-tea.html" class="submenu1">Wuyi Yancha</a> </li>
+                                    <li> <a href="/tea/other-teas/liuan-liubao.html" class="submenu1">Liu Bao </a> </li>
+                                    <li> <a href="/tea/oolong-tea.html" class="submenu1">Oolongs </a> </li>
+                                    <li> <a href="/tea/other-teas.html" class="submenu1">Other Teas </a> </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+
+                        <!-- Teaware Menu -->
+                        <div class="menu" id="teaware_menu">
+                            <nav class=submenu>
+                                <ul>
+                                    <li><a href="/teaware/clay/yixing-1.html" class="submenu1">Yixing Teapots</a></li>
+                                    <li><a href="/teaware/porcelain/antique-porcelain.html" class="submenu1">Antique Porcelain</a></li>
+                                    <li><a href="/teaware/clay/clay-kettles-1.html" class="submenu1">Kettles</a></li>
+                                    <li><a href="/books.html" class="submenu1">Books</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <!-- Blog Menu -->
+                        <!---<div class="menu" id="blog_menu">blog</div>-->
+
+                        <!-- About Menu -->
+                        <div class="menu" id="about_menu">
+                            <nav class=submenu>
+                                <ul>
+                                    <li><a>about</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                                    
+                    <!-- /SUBMENU --> 
+        </div>
+    </header>
+        <!-- Main Column -->
+        <div class=row>
+            <div class="large-12 columns">
+                    <div class="page-title">
+        <h1>New Products</h1>
+    </div>
+<div class="std"><p style="float:right;"><a class="link-rss" href="/rss/catalog/new/store_id/1/">RSS Feed.</a></p>
+<div class=row>
+    <div id="products-list-col" class="large-12 columns">
+                                                    <!-- Products Grid -->
+                <ul id="products" class="small-block-grid-2 large-block-grid-5">
+                                    <li itemscope itemtype="http://schema.org/Product"  data-id="id-1" data-year="" data-date-added="2017-02-20 00:00:00" data-producer="Other" class="item">
+                             <table class="product-list-info">
+                                <tr><td colspan=2>
+                                    <!-- Image -->
+                                    <div class="product-list-image">
+                                        <a href="https://www.essenceoftea.com/110ml-1980-s-ba-gua-zini-factory-1.html" title="110ml 1980's Ba Gua Zini Factory 1" class="product-image">
+                                            <img itemprop="image" src="https://www.essenceoftea.com/media/catalog/product/cache/1/small_image/300x/040ec09b1e35df139433887a97daa66f/d/s/dscf2187.jpg" alt="110ml 1980's Ba Gua Zini Factory 1" />
+                                        </a>
+                                    </div>
+                                </td></tr> 
+                                    <tr class="product-list-name">
+                                        <td colspan=2> 
+                                        <!-- Product Name -->        
+                                            <h4 class="product-name">
+                                                <a href="https://www.essenceoftea.com/110ml-1980-s-ba-gua-zini-factory-1.html" title="110ml 1980's Ba Gua Zini Factory 1">
+                                                    <span itemprop="name" >
+                                                        110ml 1980's Ba Gua Zini Factory 1                                                    </span>
+                                                </a>
+                                            </h4>
+                                        </td>
+                                    </tr>
+                                    <tr class="product-list-review">
+                                        <td colspan=2 itemprop="reviewCount"> 
+                                            Added:2017-02-20                                        </td>
+                                    </tr>
+                                    <tr class="product-list-price">
+                                        <td colspan=2>Price:
+
+
+    <div class="price-box">
+                
+    <!-- Single products -->
+                    <span class="regular-price" id="product-price-1028">
+                                            <span itemprop="price" data-type="price"><span class="price">£138.00</span></span>
+                                    </span>
+    
+<!-- REMOVE AS LOW AS
+        </div>
+
+    -->
+
+    
+</div> <!-- price box -->                                        </td>
+                                    </tr>
+                                      
+                                                                            <tr class='stock-available'><td colspan=2><span class="availability out-of-stock">Out of stock</span></td></tr>
+                                                                </table> 
+
+                    </li>
+                                                                <li itemscope itemtype="http://schema.org/Product"  data-id="id-2" data-year="" data-date-added="2017-02-20 00:00:00" data-producer="Other" class="item">
+                             <table class="product-list-info">
+                                <tr><td colspan=2>
+                                    <!-- Image -->
+                                    <div class="product-list-image">
+                                        <a href="https://www.essenceoftea.com/120ml-1980-s-factory-1-heisha.html" title="120ml 1980's Factory 1 Heisha " class="product-image">
+                                            <img itemprop="image" src="https://www.essenceoftea.com/media/catalog/product/cache/1/small_image/300x/040ec09b1e35df139433887a97daa66f/d/s/dscf2175_2.jpg" alt="120ml 1980's Factory 1 Heisha " />
+                                        </a>
+                                    </div>
+                                </td></tr> 
+                                    <tr class="product-list-name">
+                                        <td colspan=2> 
+                                        <!-- Product Name -->        
+                                            <h4 class="product-name">
+                                                <a href="https://www.essenceoftea.com/120ml-1980-s-factory-1-heisha.html" title="120ml 1980's Factory 1 Heisha ">
+                                                    <span itemprop="name" >
+                                                        120ml 1980's Factory 1 Heisha                                                     </span>
+                                                </a>
+                                            </h4>
+                                        </td>
+                                    </tr>
+                                    <tr class="product-list-review">
+                                        <td colspan=2 itemprop="reviewCount"> 
+                                            Added:2017-02-20                                        </td>
+                                    </tr>
+                                    <tr class="product-list-price">
+                                        <td colspan=2>Price:
+
+
+    <div class="price-box">
+                
+    <!-- Single products -->
+                    <span class="regular-price" id="product-price-1029">
+                                            <span itemprop="price" data-type="price"><span class="price">£148.00</span></span>
+                                    </span>
+    
+<!-- REMOVE AS LOW AS
+        </div>
+
+    -->
+
+    
+</div> <!-- price box -->                                        </td>
+                                    </tr>
+                                      
+                                                                            <tr class='stock-available'><td colspan=2><span class="availability out-of-stock">Out of stock</span></td></tr>
+                                                                </table> 
+
+                    </li>
+                                                                <li itemscope itemtype="http://schema.org/Product"  data-id="id-3" data-year="" data-date-added="2017-02-19 00:00:00" data-producer="Other" class="item">
+                             <table class="product-list-info">
+                                <tr><td colspan=2>
+                                    <!-- Image -->
+                                    <div class="product-list-image">
+                                        <a href="https://www.essenceoftea.com/140ml-private-order-zini-xishi.html" title="140ml Private order zini xishi" class="product-image">
+                                            <img itemprop="image" src="https://www.essenceoftea.com/media/catalog/product/cache/1/small_image/300x/040ec09b1e35df139433887a97daa66f/d/s/dscf2104-3.jpg" alt="140ml Private order zini xishi" />
+                                        </a>
+                                    </div>
+                                </td></tr> 
+                                    <tr class="product-list-name">
+                                        <td colspan=2> 
+                                        <!-- Product Name -->        
+                                            <h4 class="product-name">
+                                                <a href="https://www.essenceoftea.com/140ml-private-order-zini-xishi.html" title="140ml Private order zini xishi">
+                                                    <span itemprop="name" >
+                                                        140ml Private order zini xishi                                                    </span>
+                                                </a>
+                                            </h4>
+                                        </td>
+                                    </tr>
+                                    <tr class="product-list-review">
+                                        <td colspan=2 itemprop="reviewCount"> 
+                                            Added:2017-02-19                                        </td>
+                                    </tr>
+                                    <tr class="product-list-price">
+                                        <td colspan=2>Price:
+
+
+    <div class="price-box">
+                
+    <!-- Single products -->
+                    <span class="regular-price" id="product-price-1024">
+                                            <span itemprop="price" data-type="price"><span class="price">£166.00</span></span>
+                                    </span>
+    
+<!-- REMOVE AS LOW AS
+        </div>
+
+    -->
+
+    
+</div> <!-- price box -->                                        </td>
+                                    </tr>
+                                      
+                                                                </table> 
+
+                    </li>
+                                                                <li itemscope itemtype="http://schema.org/Product"  data-id="id-4" data-year="" data-date-added="2017-02-19 00:00:00" data-producer="Other" class="item">
+                             <table class="product-list-info">
+                                <tr><td colspan=2>
+                                    <!-- Image -->
+                                    <div class="product-list-image">
+                                        <a href="https://www.essenceoftea.com/110ml-private-order-a.html" title="110ml Private order A" class="product-image">
+                                            <img itemprop="image" src="https://www.essenceoftea.com/media/catalog/product/cache/1/small_image/300x/040ec09b1e35df139433887a97daa66f/d/s/dscf2165_1.jpg" alt="110ml Private order A" />
+                                        </a>
+                                    </div>
+                                </td></tr> 
+                                    <tr class="product-list-name">
+                                        <td colspan=2> 
+                                        <!-- Product Name -->        
+                                            <h4 class="product-name">
+                                                <a href="https://www.essenceoftea.com/110ml-private-order-a.html" title="110ml Private order A">
+                                                    <span itemprop="name" >
+                                                        110ml Private order A                                                    </span>
+                                                </a>
+                                            </h4>
+                                        </td>
+                                    </tr>
+                                    <tr class="product-list-review">
+                                        <td colspan=2 itemprop="reviewCount"> 
+                                            Added:2017-02-19                                        </td>
+                                    </tr>
+                                    <tr class="product-list-price">
+                                        <td colspan=2>Price:
+
+
+    <div class="price-box">
+                
+    <!-- Single products -->
+                    <span class="regular-price" id="product-price-1025">
+                                            <span itemprop="price" data-type="price"><span class="price">£166.00</span></span>
+                                    </span>
+    
+<!-- REMOVE AS LOW AS
+        </div>
+
+    -->
+
+    
+</div> <!-- price box -->                                        </td>
+                                    </tr>
+                                      
+                                                                </table> 
+
+                    </li>
+                                </ul>
+                                                            <!-- Products Grid -->
+                <ul id="products" class="small-block-grid-2 large-block-grid-5">
+                                    <li itemscope itemtype="http://schema.org/Product"  data-id="id-5" data-year="" data-date-added="2017-02-19 00:00:00" data-producer="Other" class="item">
+                             <table class="product-list-info">
+                                <tr><td colspan=2>
+                                    <!-- Image -->
+                                    <div class="product-list-image">
+                                        <a href="https://www.essenceoftea.com/110ml-private-order-b.html" title="110ml Private order B" class="product-image">
+                                            <img itemprop="image" src="https://www.essenceoftea.com/media/catalog/product/cache/1/small_image/300x/040ec09b1e35df139433887a97daa66f/d/s/dscf2171.jpg" alt="110ml Private order B" />
+                                        </a>
+                                    </div>
+                                </td></tr> 
+                                    <tr class="product-list-name">
+                                        <td colspan=2> 
+                                        <!-- Product Name -->        
+                                            <h4 class="product-name">
+                                                <a href="https://www.essenceoftea.com/110ml-private-order-b.html" title="110ml Private order B">
+                                                    <span itemprop="name" >
+                                                        110ml Private order B                                                    </span>
+                                                </a>
+                                            </h4>
+                                        </td>
+                                    </tr>
+                                    <tr class="product-list-review">
+                                        <td colspan=2 itemprop="reviewCount"> 
+                                            Added:2017-02-19                                        </td>
+                                    </tr>
+                                    <tr class="product-list-price">
+                                        <td colspan=2>Price:
+
+
+    <div class="price-box">
+                
+    <!-- Single products -->
+                    <span class="regular-price" id="product-price-1026">
+                                            <span itemprop="price" data-type="price"><span class="price">£166.00</span></span>
+                                    </span>
+    
+<!-- REMOVE AS LOW AS
+        </div>
+
+    -->
+
+    
+</div> <!-- price box -->                                        </td>
+                                    </tr>
+                                      
+                                                                            <tr class='stock-available'><td colspan=2><span class="availability out-of-stock">Out of stock</span></td></tr>
+                                                                </table> 
+
+                    </li>
+                                                                <li itemscope itemtype="http://schema.org/Product"  data-id="id-6" data-year="" data-date-added="2017-02-19 00:00:00" data-producer="Other" class="item">
+                             <table class="product-list-info">
+                                <tr><td colspan=2>
+                                    <!-- Image -->
+                                    <div class="product-list-image">
+                                        <a href="https://www.essenceoftea.com/200ml-1980-s-yu-hua-long-factory-one.html" title="200ml 1980's Yu Hua Long Factory one" class="product-image">
+                                            <img itemprop="image" src="https://www.essenceoftea.com/media/catalog/product/cache/1/small_image/300x/040ec09b1e35df139433887a97daa66f/d/s/dscf2180.jpg" alt="200ml 1980's Yu Hua Long Factory one" />
+                                        </a>
+                                    </div>
+                                </td></tr> 
+                                    <tr class="product-list-name">
+                                        <td colspan=2> 
+                                        <!-- Product Name -->        
+                                            <h4 class="product-name">
+                                                <a href="https://www.essenceoftea.com/200ml-1980-s-yu-hua-long-factory-one.html" title="200ml 1980's Yu Hua Long Factory one">
+                                                    <span itemprop="name" >
+                                                        200ml 1980's Yu Hua Long Factory one                                                    </span>
+                                                </a>
+                                            </h4>
+                                        </td>
+                                    </tr>
+                                    <tr class="product-list-review">
+                                        <td colspan=2 itemprop="reviewCount"> 
+                                            Added:2017-02-19                                        </td>
+                                    </tr>
+                                    <tr class="product-list-price">
+                                        <td colspan=2>Price:
+
+
+    <div class="price-box">
+                
+    <!-- Single products -->
+                    <span class="regular-price" id="product-price-1027">
+                                            <span itemprop="price" data-type="price"><span class="price">£138.00</span></span>
+                                    </span>
+    
+<!-- REMOVE AS LOW AS
+        </div>
+
+    -->
+
+    
+</div> <!-- price box -->                                        </td>
+                                    </tr>
+                                      
+                                                                            <tr class='stock-available'><td colspan=2><span class="availability out-of-stock">Out of stock</span></td></tr>
+                                                                </table> 
+
+                    </li>
+                                                                <li itemscope itemtype="http://schema.org/Product"  data-id="id-7" data-year="" data-date-added="2017-02-14 00:00:00" data-producer="Other" class="item">
+                             <table class="product-list-info">
+                                <tr><td colspan=2>
+                                    <!-- Image -->
+                                    <div class="product-list-image">
+                                        <a href="https://www.essenceoftea.com/50ml-1990-s-factory-5-half-moon.html" title="50ml 1990's Factory 5 Half Moon" class="product-image">
+                                            <img itemprop="image" src="https://www.essenceoftea.com/media/catalog/product/cache/1/small_image/300x/040ec09b1e35df139433887a97daa66f/1/-/1-100.jpg" alt="50ml 1990's Factory 5 Half Moon" />
+                                        </a>
+                                    </div>
+                                </td></tr> 
+                                    <tr class="product-list-name">
+                                        <td colspan=2> 
+                                        <!-- Product Name -->        
+                                            <h4 class="product-name">
+                                                <a href="https://www.essenceoftea.com/50ml-1990-s-factory-5-half-moon.html" title="50ml 1990's Factory 5 Half Moon">
+                                                    <span itemprop="name" >
+                                                        50ml 1990's Factory 5 Half Moon                                                    </span>
+                                                </a>
+                                            </h4>
+                                        </td>
+                                    </tr>
+                                    <tr class="product-list-review">
+                                        <td colspan=2 itemprop="reviewCount"> 
+                                            Added:2017-02-14                                        </td>
+                                    </tr>
+                                    <tr class="product-list-price">
+                                        <td colspan=2>Price:
+
+
+    <div class="price-box">
+                
+    <!-- Single products -->
+                    <span class="regular-price" id="product-price-832">
+                                            <span itemprop="price" data-type="price"><span class="price">£50.00</span></span>
+                                    </span>
+    
+<!-- REMOVE AS LOW AS
+        </div>
+
+    -->
+
+    
+</div> <!-- price box -->                                        </td>
+                                    </tr>
+                                      
+                                                                </table> 
+
+                    </li>
+                                </ul>
+                                        </div>
+</div></div>            </div>
+        </div> 
+        <!-- Add javascript for category listing page -->
+        <script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/default/essence2/js/category-listing.js"></script> 
+        <script type="text/javascript" src="https://www.essenceoftea.com/skin/frontend/default/essence2/js/jquery.quicksand.js"></script> 
+        
+            <div class="row">
+        <div class="large-12 columns">
+            <footer class='footer'>
+                    <div id="socialLinks">
+                        <a href="https://www.facebook.com/theEssenceofTea" title="Facebook"><i class="foundicon-facebook"></i></a>
+                        <a href="https://twitter.com/theessenceoftea" title="Twitter"><i class="foundicon-twitter"></i></a>
+                        <a rel="nofollow" href="http://www.youtube.com/user/theessenceofteauk" title="Youtube"><i class="foundicon-youtube"></i></a>
+                        <a rel="nofollow" href="/rss/catalog/new/store_id/1/" title="Our New Products RSS Feed"><i class="foundicon-rss"></i></a>
+                    </div>
+                    <!-- end hubspot.com follow code -->
+                <address>&copy; 2008-2014 The Essence of Tea. </address>
+            </footer>
+        </div>
+    </div>
+    <script src="https://www.essenceoftea.com/skin/frontend/default/essence2/js/foundation/foundation.js"></script>
+	
+	<!--<script src="javascripts/foundation/foundation.abide.js"></script>-->
+	
+	<!--<script src="javascripts/foundation/foundation.alerts.js"></script>-->
+	
+	<!--<script src="javascripts/foundation/foundation.clearing.js"></script>-->
+	
+	<!--<script src="javascripts/foundation/foundation.cookie.js"></script>-->
+	
+	<!--<script src="javascripts/foundation/foundation.dropdown.js"></script>-->
+	
+    <!--<script src="javascripts/foundation/foundation.forms.js"></script>-->
+	
+	
+	<!--<script src="javascripts/foundation/foundation.joyride.js"></script>-->
+	
+	<!--<script src="javascripts/foundation/foundation.magellan.js"></script>-->
+	
+	
+	<!--<script src="javascripts/foundation/foundation.placeholder.js"></script>-->
+    <script src="https://www.essenceoftea.com/skin/frontend/default/essence2/js/foundation/foundation.orbit.js"></script>
+    <script src="https://www.essenceoftea.com/skin/frontend/default/essence2/js/foundation/foundation.reveal.js"></script>
+	
+	
+	<!--<script src="javascripts/foundation/foundation.section.js"></script>-->
+	
+	<!--<script src="javascripts/foundation/foundation.tooltips.js"></script>-->
+	
+	<!--<script src="javascripts/foundation/foundation.topbar.js"></script>-->
+
+
+   <script>
+      (function($) {
+              $(document).foundation();
+        })(jQuery);
+              
+  </script> 
+ 
+
+  <!-- Google Remarketing -->
+     <script type="text/javascript">
+    /* <![CDATA[ */
+    var google_conversion_id = 979487786;
+    var google_custom_params = window.google_tag_params;
+    var google_remarketing_only = true;
+    /* ]]> */
+    </script>
+    <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+    </script>
+    <noscript>
+    <div style="display:inline;">
+    <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/979487786/?value=0&amp;guid=ON&amp;script=0"/>
+    </div>
+    </noscript> 
+        
+<div class="account-login ajaxpro-login ajaxpro-popup">
+    <form action="https://www.essenceoftea.com/customer/account/loginPost/" method="post" id="ajaxpro-login-form">
+                    <input name="form_key" type="hidden" value="vhIL5OKNNnCAT38P" />
+        
+        <div class="content">
+            <ul class="form-list">
+                <li>
+                    <label for="email" class="required"><em>*</em>Email Address</label>
+                    <div class="input-box">
+                        <input type="text" name="login[username]" value="" id="email" class="input-text required-entry validate-email" title="Email Address" />
+                    </div>
+                </li>
+                <li>
+                    <label for="pass" class="required"><em>*</em>Password</label>
+                    <div class="input-box">
+                        <input type="password" name="login[password]" class="input-text required-entry validate-password" id="pass" title="Password" />
+                    </div>
+                </li>
+                            </ul>
+        </div>
+        <div class="buttons-set">
+            <a href="https://www.essenceoftea.com/customer/account/create/" class="link-register">Register</a>
+            <a href="https://www.essenceoftea.com/customer/account/forgotpassword/" class="link-forgot">Forgot?</a>
+            <button type="submit" class="button" title="Login" name="send" id="send2"><span><span>Login</span></span></button>
+        </div>
+    </form>
+    <script type="text/javascript">
+    //<![CDATA[
+        document.observe("dom:loaded", function () {
+            var dataForm = new VarienForm('ajaxpro-login-form', true);
+
+            function toggleLoginForm(e) {
+                e.stop();
+
+                // login page
+                var originalForm = $('login-form');
+                if (originalForm) {
+                    originalForm.scrollTo();
+                    return;
+                }
+
+                var block = $('ajaxpro-login-form').up('.account-login'),
+                    position = e.pointer(),
+                    left = position.x,
+                    top  = position.y + 10;
+
+                // fix top accroding to e.element() height
+                var el = e.element();
+                if (el) {
+                    top = el.cumulativeOffset().top + el.getHeight() + 3;
+                }
+
+                // fix position acording to header or content edge
+                var contstraintEl = $$('.header, .main').first();
+                if (contstraintEl) {
+                    var blockRight = left + block.getWidth(),
+                        maxRight   = contstraintEl.cumulativeOffset().left
+                            + contstraintEl.getWidth();
+
+                    if (blockRight > maxRight) {
+                        left = left - (blockRight - maxRight) - 5;
+                    }
+                }
+
+                block.setStyle({
+                    right : 'auto',
+                    bottom: 'auto',
+                    left  : left + 'px',
+                    top   : top + 'px'
+                });
+                block.toggleClassName('ajaxpro-block-shown');
+            };
+            AjaxPro.observe('addObservers', function() {
+                var el = $$('.links a:[href="https://www.essenceoftea.com/customer/account/login/"]').first();
+                if (!el) {
+                    return;
+                }
+                el.observe('click', toggleLoginForm);
+                document.observe('click', function(e) {
+                    if (e.element().up('.account-login')) {
+                        return;
+                    }
+                    var block = $('ajaxpro-login-form').up('.account-login');
+                    if (block) {
+                        block.removeClassName('ajaxpro-block-shown');
+                    }
+                });
+            });
+        });
+    //]]>
+    </script>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+document.observe("dom:loaded", function (){
+
+    AjaxPro.config.init({"general":{"enabled":"1","disabledOnShoppingCartPage":"0","disabledOnMobileDevice":"0","useLoginFormBlock":"1","blocks":"formkey","location":"center","enabled_overlay":"0","overlay_opacity":"0.7","opacity":"0.95","text":"Updating Cart","enabledNoticeForm":"1","showOptionsPopup":"1","duration":"0.5","useHeaderCartBlock":"0"},"effect":{"location":"center","spinner_location":"1","enabled_overlay":"0","enabled_opacity":"1","overlay_opacity":"0.7","duration":"0.5","opacity":"1","text":"","autohidemessagedelay":"180"},"checkoutCart":{"enabled":"1","enabledForm":"1","enabledDeleteConfirm":"1","useHeaderCartBlock":"0","blocks":"top.links,headerCart,checkout.cart,cart_sidebar","messageHandle":"tm_ajaxpro_checkout_cart_add_simple"},"wishlistIndex":{"enabled":"1","enabledForm":"0","enabledDeleteConfirm":"1","blocks":"top.links,customer.wishlist,wishlist_sidebar,checkout.cart"},"catalogProductCompare":{"enabled":"1","enabledForm":"0","enabledDeleteConfirm":"1","blocks":"catalog.compare.sidebar,right.reports.product.compared"},"catalogProductView":{"enabled":"1","blocks":""},"catalogCategoryView":{"enabled":"1","type":"scroll"},"addToCart":{"enabled":"1","enabledForm":"1","enabledDeleteConfirm":"1"},"addToCompare":{"enabled":"0","enabledForm":"0","enabledDeleteConfirm":"1"},"addToWishlist":{"enabled":"0","enabledForm":"0","enabledDeleteConfirm":"1"},"addScrolling":{"enabled":"1","type":"scroll"}})
+        .set('version', '3.2.1')
+        .set('handles', ["default","cms_page","STORE_default","THEME_frontend_default_essence2","cms_page_view","page_two_columns_left","customer_logged_out"])
+        .set('baseUrl', "https://www.essenceoftea.com/")
+        .set('isMobile', false)
+        .set('isSearchBot', false)
+        .set('isLoggedIn',  false)
+    ;
+
+    AjaxPro.init();
+
+});
+//]]>
+</script><!-- ajaxpro_ajaxpro_message_start --><div id="ajaxpro-notice-form" class="ajaxpro-form" style="display:none">
+        <a href="javascript:void(0)" class="btn-close ajaxpro-button" title="Remove This Item">Remove This Item</a>
+    
+<div>
+    </div><div class="ajaxpro-buttons-set"><button class="ajaxpro-continue-button ajaxpro-button button">
+    <span><span>
+        Continue shopping    </span></span>
+</button>
+<script type="text/javascript">
+//<![CDATA[
+    var interval, delay1490720588 = 180;
+    clearInterval(interval);
+    interval = setInterval(function () {
+
+        if (delay1490720588 < 30) {
+
+            var buttons = $$('.ajaxpro-continue-button');
+            if (0 == buttons.length) {
+                clearInterval(interval);
+                return;
+            }
+            var button = buttons.first().down('span span');
+            button.update(
+                Translator.translate('Continue shopping (%d second)')
+                    .replace('%d', delay1490720588)
+            );
+        }
+
+        if (delay1490720588 > 0 ) {
+            delay1490720588--;
+        } else {
+            AjaxPro.message.hide();
+            clearInterval(interval);
+        }
+
+    }, 1000);
+//]]>
+</script></div></div><!-- ajaxpro_ajaxpro_message_end --><!--</div>-->
+<!-- Google Remarketing -->
+<script type="text/javascript">
+/* <![CDATA[ */
+var google_conversion_id = 979487786;
+var google_custom_params = window.google_tag_params;
+var google_remarketing_only = true;
+/* ]]> */
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/979487786/?value=0&amp;guid=ON&amp;script=0"/>
+</div>
+</noscript><div id="contactModal" class="reveal-modal"> </div>
+<script>
+      (function($) {
+
+
+              $(document).ready(function() {     
+                      $('.category-description').fadeIn(3000);
+                      $('.category-description').slideDown(3000);
+                      var catTitle = $('.category-title').text();
+                      catTitle = $.trim(catTitle);               
+                      // add images to relevant category
+                      if(catTitle=='Puerh Tea') {
+                          $('#myorbit').append('<li><img alt="Nannuo Mountain Puerh Tea Leaves" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-puerh/puerh-leaves-bunch.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Puerh Tea cakes" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-puerh/puerh-cakes.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Drying Puerh Tea after pressing" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-puerh/pressing-puerh-cakes.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Aged Puerh Tea Cake" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-puerh/aged-puerh-close.jpg"></li>');
+                          $(document).foundation('orbit').init();
+                      }
+                      else if(catTitle=='Wuyi Yancha (Rock Tea)') {
+                          $('#myorbit').append('<li><img alt="Wuyi Mountains Skyline" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-wuyi/wuyi-skyline.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Carrying Wuyi Tea Leaves" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-wuyi/wuyi-carriers.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Roasting Wuyi Rock Tea over charcoal" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-wuyi/wuyi-charcoal-roast.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Bruising Wuyi Tea to aid oxidation" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-wuyi/wuyi-bruising.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Waterfall in Wuyi Tea gardens" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-wuyi/wuyi-waterfall.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Wuyi Tea growing on cliffs" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-wuyi/wuyi-cliff-tea.jpg"></li>');
+                          $(document).foundation('orbit').init();
+                      }
+                      else if(catTitle=='Yixing teapots') {
+                          $('#myorbit').append('<li><img alt="Chen Ju Fang" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-yixing/chenjufang-smile.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Master Zhou" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-yixing/master-zhou-smoothing.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Yixing teapot tools" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-yixing/chenjufang-tools.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Raw Yixing Clay" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-yixing/raw-tianqingni.jpg"></li>');
+                          $('#myorbit').append('<li><img alt="Yixing Apprentice Potter" src="https://www.essenceoftea.com/skin/frontend/default/essence2//images/cat-yixing/apprentice.jpg"></li>');
+                          $(document).foundation('orbit').init();
+                      }
+                      //else {
+                        //console.log("not puerh");
+                        //console.log(catTitle);
+                      //}
+              });
+
+              function fadeIn(obj) {
+                    $(obj).slideDown(1000);
+                    $(obj).fadeIn(1000);
+                }
+      })(jQuery);
+
+</script>
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","licenseKey":"784f4f05e5","applicationID":"5457645","transactionName":"NVcEMkQDXxFUU0xdXwwdJwVCC14MGlNVRx8SUwEDGRRYB0I=","queueTime":0,"applicationTime":148,"atts":"GRAHRAwZTB8=","errorBeacon":"bam.nr-data.net","agent":""}</script></body>
+</html>
