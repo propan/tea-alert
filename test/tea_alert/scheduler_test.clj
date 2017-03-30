@@ -62,7 +62,7 @@
   (testing "Send notification when new items are detected"
     (with-redefs-fn {#'tea-alert.scheduler/process-store   (fn [storage {:keys [key name]}]
                                                              (is (= {:storage true} storage))
-                                                             (is (contains? #{"bitterleafteas" "chawangshop" "essenceoftea" "yunnansourcing" "white2tea"} key))
+                                                             (is (contains? #{"bitterleafteas" "chawangshop" "essenceoftea" "yunnansourcing" "white2tea" "moychay"} key))
                                                              (let [items (if (contains? #{"bitterleafteas" "chawangshop"} key)
                                                                            [key]
                                                                            [])]

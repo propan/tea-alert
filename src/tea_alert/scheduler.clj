@@ -6,6 +6,7 @@
             [tea-alert.parsers.bitterleafteas :as bitterleafteas]
             [tea-alert.parsers.chawangshop :as chawangshop]
             [tea-alert.parsers.essenceoftea :as essenceoftea]
+            [tea-alert.parsers.moychay :as moychay]
             [tea-alert.parsers.yunnansourcing :as yunnansourcing]
             [tea-alert.parsers.white2tea :as white2tea]
             [tea-alert.storage :as s]
@@ -35,7 +36,12 @@
    {:name   "White2Tea"
     :key    "white2tea"
     :url    "http://white2tea.com"
-    :parser white2tea/parse}])
+    :parser white2tea/parse}
+
+   {:name   "MoyChay.RU"
+    :key    "moychay"
+    :url    "https://moychay.com/catalog/new_products"
+    :parser moychay/parse}])
 
 (defn fetch-listed
   [{:keys [name url parser]}]
