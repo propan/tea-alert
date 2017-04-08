@@ -1,16 +1,16 @@
 (ns tea-alert.parsers.yunnansourcing
   (:require [net.cgrand.enlive-html :as enlive]
-            [tea-alert.parsers.helpers :refer [extract-with]]))
+            [tea-alert.parsers.helpers :refer [extract-with make-absolute-url]]))
 
 (defn- extract-item
   [entry]
-  {:image (extract-with entry [:.center_block :.product_img_link :img] #(-> % :attrs :src))
-   :title (extract-with entry [:.center_block :h3 :a] #(-> % :content first))
-   :url   (extract-with entry [:.center_block :h3 :a] #(-> % :attrs :href))
-   :price (extract-with entry [:.price] #(-> % :content first))})
+  {:image (extract-with entry [:.img-link :img] #(->> % :attrs :src (str "http:")))
+   :title (extract-with entry [:a.title] #(-> % :content first))
+   :url   (extract-with entry [:a.title] #(-> % :attrs :href (make-absolute-url "https://yunnansourcing.com")))
+   :price (extract-with entry [:.price :.money] #(->> % :content first (clojure.core/re-find #"\$\d+\.\d+")))})
 
 (defn parse
   [page]
-  (->> (enlive/select page [:.ajax_block_product])
+  (->> (enlive/select page [:.product])
        (map extract-item)))
 

@@ -30,7 +30,7 @@
 
    {:name   "Yunnan Sourcing"
     :key    "yunnansourcing"
-    :url    "http://yunnansourcing.com/en/new-products"
+    :url    "https://yunnansourcing.com/collections/new-products?sort_by=created-descending"
     :parser yunnansourcing/parse}
 
    {:name   "White2Tea"
