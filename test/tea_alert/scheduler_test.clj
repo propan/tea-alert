@@ -57,25 +57,46 @@
                                                           (+ 20000 (System/currentTimeMillis)))
                      #'tea-alert.storage/set-next-check (fn [storage _]
                                                           (is false "Never called"))}
-      #(check-for-updates {:storage true} {:sender true})))
+      #(check-for-updates {:storage true} (fn [_] (is false "Notification function should not be called")) (fn [_] (is false "Error function should not be called")))))
 
-  (testing "Send notification when new items are detected"
-    (with-redefs-fn {#'tea-alert.scheduler/process-store   (fn [storage {:keys [key name]}]
+  (testing "Sends a notification when new items are detected"
+    (let [capture (atom nil)]
+      (with-redefs-fn {#'tea-alert.scheduler/process-store (fn [storage {:keys [key name]}]
                                                              (is (= {:storage true} storage))
                                                              (is (contains? #{"bitterleafteas" "chawangshop" "essenceoftea" "yunnansourcing" "white2tea" "moychay"} key))
-                                                             (let [items (if (contains? #{"bitterleafteas" "chawangshop"} key)
-                                                                           [key]
-                                                                           [])]
+                                                             (let [items (if (contains? #{"bitterleafteas" "chawangshop"} key) [key] [])]
                                                                {:name name :items items}))
-                     #'tea-alert.mailjet/send-notification (fn [sender items]
-                                                             (is (= {:sender true} sender))
-                                                             (is (= [{:name "Bitterleaf Teas" :items ["bitterleafteas"]}
-                                                                     {:name "Cha Wang Shop" :items ["chawangshop"]}] items)))
-                     #'tea-alert.storage/get-next-check    (fn [storage]
+                       #'tea-alert.storage/get-next-check  (fn [storage]
                                                              (is (= {:storage true} storage))
                                                              (- (System/currentTimeMillis) 20000))
-                     #'tea-alert.storage/set-next-check    (fn [storage next]
+                       #'tea-alert.storage/set-next-check  (fn [storage next]
                                                              (is (= {:storage true} storage))
                                                              (is (> next (System/currentTimeMillis)))
                                                              (is (< next (+ (System/currentTimeMillis) (* 60000 61)))))}
-      #(check-for-updates {:storage true} {:sender true}))))
+        #(do
+           (check-for-updates {:storage true} (fn [xs] (reset! capture xs)) (fn [ex] (is false "Error function should not be called")))
+           (is (= [{:name "Bitterleaf Teas" :items ["bitterleafteas"]}
+                   {:name "Cha Wang Shop" :items ["chawangshop"]}] @capture))))))
+
+  (testing "Sends an error notification when fetching fails"
+    (let [notification-capture (atom nil)
+          error-capture        (atom nil)]
+      (with-redefs-fn {#'tea-alert.scheduler/process-store (fn [storage {:keys [key name]}]
+                                                             (is (= {:storage true} storage))
+                                                             (is (contains? #{"bitterleafteas" "chawangshop" "essenceoftea" "yunnansourcing" "white2tea" "moychay"} key))
+                                                             (if (= "white2tea" key)
+                                                               (throw (Exception. "Errors are unavoidable."))
+                                                               (let [items (if (contains? #{"bitterleafteas" "chawangshop"} key) [key] [])]
+                                                                 {:name name :items items})))
+                       #'tea-alert.storage/get-next-check  (fn [storage]
+                                                             (is (= {:storage true} storage))
+                                                             (- (System/currentTimeMillis) 20000))
+                       #'tea-alert.storage/set-next-check  (fn [storage next]
+                                                             (is (= {:storage true} storage))
+                                                             (is (> next (System/currentTimeMillis)))
+                                                             (is (< next (+ (System/currentTimeMillis) (* 60000 61)))))}
+        #(do
+           (check-for-updates {:storage true} (fn [xs] (reset! notification-capture xs)) (fn [ex] (reset! error-capture ex)))
+           (is (= [{:name "Bitterleaf Teas" :items ["bitterleafteas"]}
+                   {:name "Cha Wang Shop" :items ["chawangshop"]}] @notification-capture))
+           (is (= "Failed to crawl White2Tea store" (when-let [ex @error-capture] (.getMessage ex)))))))))

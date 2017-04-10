@@ -89,12 +89,19 @@
     (+ now (* 60000 (+ 30 (rand-int 30))))))
 
 (defn check-for-updates
-  [storage sender]
+  [storage notification-fn error-fn]
   (when (<= (s/get-next-check storage) (System/currentTimeMillis))
     (println "Crawling web-store pages")
-    (let [new-items (->> STORES (map #(process-store storage %)) (filter #(seq (:items %))))]
+    (let [new-items (->> STORES
+                         (map (fn [store]
+                                (try
+                                  (process-store storage store)
+                                  (catch Exception e
+                                    (error-fn (ex-info (str "Failed to crawl " (:name store) " store") {:cause e}))
+                                    {:name (:name store) :items []}))))
+                         (filter #(seq (:items %))))]
       (if (seq new-items)
-        (m/send-notification sender new-items)
+        (notification-fn new-items)
         (println "No new items are found")))
     (s/set-next-check storage (within-an-hour))))
 
@@ -109,7 +116,9 @@
 
   (start [component]
     (println (format "Starting scheduler with interval: %dms" interval))
-    (assoc component :exit-ch (schedule #(check-for-updates storage sender) interval #(handle-task-error storage sender %))))
+    (let [error-fn        #(handle-task-error storage sender %)
+          notification-fn #(m/send-notification sender %)]
+      (assoc component :exit-ch (schedule #(check-for-updates storage notification-fn error-fn) interval error-fn))))
 
   (stop [{:keys [exit-ch] :as component}]
     (println "Stopping scheduler")

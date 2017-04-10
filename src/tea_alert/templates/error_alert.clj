@@ -21,11 +21,14 @@
                 [:p {:style "padding: 0 0 10px 0; margin: 0; color: #333;"}
                  "Houston, we've had a problem."]
                 [:p {:style "padding: 0 0 5px 0; margin: 0;"}
-                 "We've had a main B bus undervolt. I hope you know what it means:"]]]
+                 "We've had a main B bus undervolt. I hope you know what it means:"]
+                [:p {:style "padding: 0 0 5px 0; margin: 0;"}
+                 (.getMessage ex)]]]
               [:tr
                [:td {:bgcolor "#ffffff" :style "padding: 0 5px;"}
                 [:pre {:style "width: 680px; overflow: scroll; border: 1px solid #c0c0c0; padding: 5px 10px; line-height: 20px; background-color: #f0f0f0; font-size: 12px;"}
-                 (->> ex (.getStackTrace) (map str) (clojure.string/join "\n"))]]]
+                 (if-let [cause (or (:cause (ex-data ex)) ex)]
+                   (->> ex (.getStackTrace) (map str) (clojure.string/join "\n")))]]]
               [:tr
                [:td {:bgcolor "#ffffff" :style "font-family: sans-serif; font-size: 14px; padding: 20px 13px 10px 13px; color: #464646; line-height: 20px;"}
                 [:p {:style "padding: 0 0 5px 0; margin: 0;"}
