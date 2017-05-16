@@ -4,13 +4,13 @@
 
 (defn- extract-item
   [entry]
-  {:image (extract-with entry [:.product-image :img] #(-> % :attrs :src))
-   :title (extract-with entry [:.product-name :a] #(-> % :content first))
-   :url   (extract-with entry [:.product-name :a] #(-> % :attrs :href))
+  {:image (extract-with entry [:img.product-image-photo] #(-> % :attrs :src))
+   :title (extract-with entry [:.product-item-name :a] #(-> % :content first (clojure.string/replace "\n" "") (clojure.string/trim)))
+   :url   (extract-with entry [:.product-item-name :a] #(-> % :attrs :href))
    :price (extract-with entry [:.price] #(-> % :content first))})
 
 (defn parse
   [page]
-  (->> (enlive/select page [:.std :.item])
+  (->> (enlive/select page [:.products-grid :ol.product-items :li.product-item])
        (map extract-item)))
 
