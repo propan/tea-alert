@@ -2,6 +2,19 @@
   (:require [com.stuartsierra.component :as component]
             [clojure.java.io :as io]))
 
+(def TTL (* 60 24 60 60 1000))
+
+(def MAX_STORE_SIZE 200)
+
+(defn- purge
+  "Returns a new map with filtered out expired items and limited by the given size."
+  [items ttl limit]
+  (let [threshold (- (System/currentTimeMillis) ttl)]
+    (->> (sort-by val > items)
+         (filter #(> (second %) threshold))
+         (take limit)
+         (into {}))))
+
 (defn- load-data
   [path]
   (try
@@ -21,7 +34,7 @@
   component/Lifecycle
 
   (start [component]
-    (let [db-path (or (System/getenv "TEA_ALERT_DATA") ".")]
+    (let [db-path (or db-path (System/getenv "TEA_ALERT_DATA") ".")]
       (assoc component
              :data (atom (load-data db-path))
              :db-path db-path)))
@@ -50,10 +63,12 @@
   [{:keys [data]} store]
   (let [key (keyword (str "entries-" store))
         val (key @data)]
-    (set val)))
+    (set (keys val))))
 
 (defn write-items
   [{:keys [db-path data]} store items]
-  (let [key (keyword (str "entries-" store))]
-    (swap! data assoc key items)
+  (let [key   (keyword (str "entries-" store))
+        now   (System/currentTimeMillis)
+        items (reduce (fn [m v] (assoc m v now)) {} items)]
+    (swap! data update-in [key] #(purge (merge % items) TTL MAX_STORE_SIZE))
     (save-data db-path @data)))
