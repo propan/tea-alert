@@ -111,20 +111,22 @@
   ;; TODO: throttle emails with errors per shop+error type
   (m/send-error-alert sender ex))
 
-(defrecord Scheduler [interval storage sender exit-ch]
+(defrecord Scheduler [interval storage sender exit-chs]
   component/Lifecycle
 
   (start [component]
     (println (format "Starting scheduler with interval: %dms" interval))
     (let [error-fn        #(handle-task-error storage sender %)
           notification-fn #(m/send-notification sender %)]
-      (assoc component :exit-ch (schedule #(check-for-updates storage notification-fn error-fn) interval error-fn))))
+      (assoc component :exit-chs [(schedule #(check-for-updates storage notification-fn error-fn) interval error-fn)])))
 
-  (stop [{:keys [exit-ch] :as component}]
+  (stop [{:keys [exit-chs] :as component}]
     (println "Stopping scheduler")
-    (close! exit-ch)
-    (assoc component :exit-ch nil)))
+    (doseq [ch exit-chs]
+      (close! ch))
+    (assoc component :exit-chs nil)))
 
 (defn create-scheduler
   [& {:keys [interval] :or {interval 60000}}]
   (map->Scheduler {:interval interval}))
+
