@@ -9,7 +9,9 @@
 
                  [hiccup "1.0.5"]
                  [javax.mail/mail "1.4.7"]
-                 [com.mailjet/mailjet-client "4.0.5"]]
+                 [com.mailjet/mailjet-client "4.0.5" :exclusions [[com.fasterxml.jackson.core/jackson-core]
+                                                                  [com.fasterxml.jackson.core/jackson-databind]]]
+                 [amazonica "0.3.101"]]
 
   :main tea-alert.server
   :aot [tea-alert.server])
