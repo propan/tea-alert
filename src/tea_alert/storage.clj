@@ -48,17 +48,6 @@
   []
   (map->FileStorage {}))
 
-(defn get-next-check
-  [{:keys [data]}]
-  (if-let [val (:next-check @data)]
-    val
-    (System/currentTimeMillis)))
-
-(defn set-next-check
-  [{:keys [db-path data]} time]
-  (swap! data assoc :next-check time)
-  (save-data db-path @data))
-
 (defn read-items
   [{:keys [data]} store]
   (let [key (keyword (str "entries-" store))

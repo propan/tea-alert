@@ -12,6 +12,7 @@
             [tea-alert.parsers.yunnansourcing :as yunnansourcing]
             [tea-alert.parsers.white2tea :as white2tea]
             [tea-alert.storage :as s]
+            [tea-alert.buffer :as b]
             [tea-alert.mailjet :as m]))
 
 (def STORES
@@ -93,27 +94,27 @@
                                                    (recur (t/now) rest)))))
     exit-ch))
 
-(defn- within-an-hour
-  []
-  (let [now (System/currentTimeMillis)]
-    (+ now (* 60000 (+ 30 (rand-int 30))))))
-
 (defn check-for-updates
-  [storage notification-fn error-fn]
-  (when (<= (s/get-next-check storage) (System/currentTimeMillis))
-    (println "Crawling web-store pages")
-    (let [new-items (->> STORES
-                         (map (fn [store]
-                                (try
-                                  (process-store storage store)
-                                  (catch Exception e
-                                    (error-fn (ex-info (str "Failed to crawl " (:name store) " store") {:cause e}))
-                                    {:name (:name store) :items []}))))
-                         (filter #(seq (:items %))))]
-      (if (seq new-items)
-        (notification-fn new-items)
-        (println "No new items are found")))
-    (s/set-next-check storage (within-an-hour))))
+  [storage buffer error-fn]
+  (println "Crawling web-store pages")
+  (let [new-items (->> STORES
+                       (map (fn [store]
+                              (try
+                                (process-store storage store)
+                                (catch Exception e
+                                  (error-fn (ex-info (str "Failed to crawl " (:name store) " store") {:cause e}))
+                                  {:name (:name store) :items []}))))
+                       (filter #(seq (:items %))))]
+    (if (seq new-items)
+      (b/put! buffer new-items)
+      (println "No new items are found"))))
+
+(defn send-notifications
+  [sender buffer]
+  (let [new-items (b/take! buffer)]
+    (if (seq new-items)
+      (m/send-notification sender new-items)
+      (println "No new items are found in the buffer"))))
 
 (defn handle-task-error
   [storage sender ex]
@@ -121,15 +122,22 @@
   ;; TODO: throttle emails with errors per shop+error type
   (m/send-error-alert sender ex))
 
-(defrecord Scheduler [interval storage sender exit-chs]
+(defrecord Scheduler [storage buffer sender exit-chs]
   component/Lifecycle
 
   (start [component]
-    (println (format "Starting scheduler with interval: %dms" interval))
-    (let [error-fn        #(handle-task-error storage sender %)
-          notification-fn #(m/send-notification sender %)]
-      (assoc component :exit-chs [(schedule #(check-for-updates storage notification-fn error-fn)
-                                            (p/periodic-seq (t/now) (t/millis interval))
+    (println "Starting scheduler")
+    (let [error-fn #(handle-task-error storage sender %)]
+      (assoc component :exit-chs [;; crawl web-stores for new items every 30-60 minutes
+                                  (schedule #(check-for-updates storage buffer error-fn)
+                                            (p/periodic-seq (t/now) (t/minutes (+ 30 (rand-int 30))))
+                                            error-fn)
+                                  ;; send out notifications every mornining at 08:00 Moscow time
+                                  (schedule #(send-notifications sender buffer)
+                                            (->> (p/periodic-seq (.. (t/now)
+                                                                     (withZone (org.joda.time.DateTimeZone/forID "Europe/Moscow"))
+                                                                     (withTime 8 0 0 0))
+                                                                 (-> 1 t/days)))
                                             error-fn)])))
 
   (stop [{:keys [exit-chs] :as component}]
@@ -139,6 +147,6 @@
     (assoc component :exit-chs nil)))
 
 (defn create-scheduler
-  [& {:keys [interval] :or {interval 60000}}]
-  (map->Scheduler {:interval interval}))
+  []
+  (map->Scheduler {}))
 

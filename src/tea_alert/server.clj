@@ -1,6 +1,7 @@
 (ns tea-alert.server
   (:require [clojure.core.async :as async :refer [chan <!! close!]]
             [com.stuartsierra.component :as component]
+            [tea-alert.buffer :refer [create-buffer]]
             [tea-alert.mailjet :refer [create-email-sender]]
             [tea-alert.storage :as s :refer [create-storage]]
             [tea-alert.scheduler :refer [create-scheduler]])
@@ -67,9 +68,10 @@
                (:sender-email config)
                (:recipients config)
                (:alert-recipients config))
+   :buffer    (create-buffer false)
    :scheduler (component/using
-               (create-scheduler :interval 10000)
-               [:storage :sender])
+               (create-scheduler)
+               [:storage :buffer :sender])
    :storage   (create-storage)))
 
 (defonce system-instance nil)
