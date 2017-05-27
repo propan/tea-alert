@@ -1,5 +1,7 @@
 (ns tea-alert.scheduler
   (:require [clojure.core.async :as async :refer [chan go-loop <! alt! close!]]
+            [clj-time.periodic :as p]
+            [clj-time.core :as t]
             [clj-http.client :as client]
             [com.stuartsierra.component :as component]
             [net.cgrand.enlive-html :as enlive]
@@ -69,18 +71,26 @@
       (s/write-items storage key (->> citems (map :url) (map md5-hash))))
     {:name name :items nitems}))
 
+(defn interval-ms
+  [start end]
+  (if (t/before? end start)
+    0
+    (t/in-millis (t/interval start end))))
+
 (defn- schedule
-  [task interval error-fn]
+  [task time-seq error-fn]
   (let [exit-ch (chan)]
-    (go-loop [timeout-ch (async/timeout interval)]
-      (alt!
-        exit-ch    (println "Task cancelled.")
-        timeout-ch (do
-                     (try
-                       (task)
-                       (catch Exception e
-                         (error-fn e)))
-                     (recur (async/timeout interval)))))
+    (go-loop [now      (t/now)
+              time-seq (drop-while #(t/before? % now) time-seq)]
+      (when-let [[next & rest] (seq time-seq)]
+        (alt!
+          exit-ch                                (println "Task cancelled.")
+          (async/timeout (interval-ms now next)) (do
+                                                   (try
+                                                     (task)
+                                                     (catch Exception e
+                                                       (error-fn e)))
+                                                   (recur (t/now) rest)))))
     exit-ch))
 
 (defn- within-an-hour
@@ -118,7 +128,9 @@
     (println (format "Starting scheduler with interval: %dms" interval))
     (let [error-fn        #(handle-task-error storage sender %)
           notification-fn #(m/send-notification sender %)]
-      (assoc component :exit-chs [(schedule #(check-for-updates storage notification-fn error-fn) interval error-fn)])))
+      (assoc component :exit-chs [(schedule #(check-for-updates storage notification-fn error-fn)
+                                            (p/periodic-seq (t/now) (t/millis interval))
+                                            error-fn)])))
 
   (stop [{:keys [exit-chs] :as component}]
     (println "Stopping scheduler")
