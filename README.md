@@ -27,6 +27,10 @@ The AWS key used to access should give read/write permissions to `tea-alert/buff
 
 Run `java -jar tea-alert-standalone.jar`
 
+## Docker Image
+
+Run `lein test && lein uberjar && docker build -t tea-alert .`
+
 ## License
 
 Copyright © 2016-2017 Pavel Prokopenko

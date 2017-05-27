@@ -9,9 +9,13 @@
                  [com.stuartsierra/component "0.3.1"]
                  [hiccup "1.0.5"]
                  [javax.mail/mail "1.4.7"]
-                 [com.mailjet/mailjet-client "4.0.5" :exclusions [[com.fasterxml.jackson.core/jackson-core]
-                                                                  [com.fasterxml.jackson.core/jackson-databind]]]
-                 [amazonica "0.3.101"]]
+                 [com.mailjet/mailjet-client "4.0.5" :exclusions [com.fasterxml.jackson.core/jackson-core
+                                                                  com.fasterxml.jackson.core/jackson-databind]]
+                 [amazonica "0.3.101" :exclusions [com.amazonaws/aws-java-sdk
+                                                   com.amazonaws/dynamodb-streams-kinesis-adapter
+                                                   com.amazonaws/amazon-kinesis-client]]
+                 [com.amazonaws/aws-java-sdk-core "1.11.115"]
+                 [com.amazonaws/aws-java-sdk-s3 "1.11.115"]]
 
   :main tea-alert.server
   :aot [tea-alert.server])
