@@ -68,7 +68,7 @@
                (:sender-email config)
                (:recipients config)
                (:alert-recipients config))
-   :buffer    (create-buffer false)
+   :buffer    (create-buffer true)
    :scheduler (component/using
                (create-scheduler)
                [:storage :buffer :sender])
