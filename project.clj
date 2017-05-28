@@ -14,8 +14,8 @@
                  [amazonica "0.3.101" :exclusions [com.amazonaws/aws-java-sdk
                                                    com.amazonaws/dynamodb-streams-kinesis-adapter
                                                    com.amazonaws/amazon-kinesis-client]]
-                 [com.amazonaws/aws-java-sdk-core "1.11.115"]
-                 [com.amazonaws/aws-java-sdk-s3 "1.11.115"]]
+                 [com.amazonaws/aws-java-sdk-core "1.11.115" :exclusions [commons-logging]]
+                 [com.amazonaws/aws-java-sdk-s3 "1.11.115" :exclusions [commons-logging]]]
 
   :main tea-alert.server
   :aot [tea-alert.server])
