@@ -51,9 +51,7 @@
   (try
     (-> url client/get :body enlive/html-snippet parser)
     (catch Exception e
-      ;; TODO: throw the exception to trigger an alert
-      (println "Failed to fetch listings from" name ":" (.getMessage e))
-      [])))
+      (throw (Exception. (str "Failed to fetch listings from " name ": " (.getMessage e)))))))
 
 (defn md5-hash
   [str]
@@ -68,6 +66,8 @@
   (let [pitems (s/read-items storage key)
         citems (fetch-listed config)
         nitems (filter (complement #(contains? pitems (md5-hash (:url %)))) citems)]
+    (when-not (seq citems)
+      (throw (Exception. "Parser issue: no items returned")))
     (when (seq nitems)
       (s/write-items storage key (->> citems (map :url) (map md5-hash))))
     {:name name :items nitems}))
