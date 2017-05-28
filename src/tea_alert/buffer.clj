@@ -6,12 +6,13 @@
 
 (defn- s3-save-data
   [data]
-  (let [stream (-> (pr-str data) (.getBytes "UTF-8") (java.io.ByteArrayInputStream.))]
+  (let [data (-> (pr-str data) (.getBytes "UTF-8"))]
     (try
       (s3/put-object {:endpoint "eu-west-1"}
                      :bucket-name "h-storage"
                      :key "tea-alert/buffer.edn"
-                     :input-stream stream)
+                     :input-stream (java.io.ByteArrayInputStream. data)
+                     :metadata {:content-length (alength data)})
       (catch Exception e
         (println "Failed to upload buffer data to S3: " (.getMessage e))))
     data))

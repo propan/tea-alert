@@ -36,9 +36,10 @@
                                                        (reset! capture args))}
         #(do
            (#'tea-alert.buffer/s3-save-data {:test true})
-           (let [{:keys [bucket-name key input-stream]} @capture]
+           (let [{:keys [bucket-name key input-stream metadata]} @capture]
              (is (= "h-storage" bucket-name))
              (is (= "tea-alert/buffer.edn" key))
+             (is (= {:content-length 12} metadata))
              (is (= "{:test true}" (slurp input-stream))))))))
 
   (testing "Reports errors"
