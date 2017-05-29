@@ -49,7 +49,7 @@
 (defn fetch-listed
   [{:keys [name url parser]}]
   (try
-    (-> url (client/get {:insecure? false :socket-timeout 3000 :conn-timeout 3000}) :body enlive/html-snippet parser)
+    (-> url (client/get {:insecure? false :socket-timeout 5000 :conn-timeout 5000}) :body enlive/html-snippet parser)
     (catch Exception e
       (throw (Exception. (str "Failed to fetch listings from " name ": " (.getMessage e)))))))
 
