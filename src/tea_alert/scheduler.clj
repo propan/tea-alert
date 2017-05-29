@@ -118,7 +118,9 @@
 
 (defn handle-task-error
   [storage sender ex]
-  (println "Failed to execute task:" ex)
+  (if-let [cause (:cause (ex-data ex))]
+    (println "Failed to execute task:" (str (.getMessage ex) ":") (.getMessage cause))
+    (println "Failed to execute task:" (.getMessage ex)))
   ;; TODO: throttle emails with errors per shop+error type
   (m/send-error-alert sender ex))
 

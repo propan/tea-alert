@@ -127,3 +127,30 @@
         #(do
            (send-notifications {:sender true} {:buffer true})
            (is (= ["No new items are found in the buffer"] @log-capture)))))))
+
+(deftest handle-task-error-test
+  (testing "Sends a notification when called with a generic exception"
+    (let [capture     (atom nil)
+          log-capture (atom [])]
+      (with-redefs-fn {#'clojure.core/println               (fn [& args] (swap! log-capture conj (clojure.string/join " " args)))
+
+                       #'tea-alert.mailjet/send-error-alert (fn [sender ex]
+                                                              (is (= {:sender true} sender))
+                                                              (reset! capture ex))}
+        #(do
+           (handle-task-error {:storage true} {:sender true} (Exception. "Bad error!"))
+           (is (= "Bad error!" (.getMessage @capture)))
+           (is (= ["Failed to execute task: Bad error!"] @log-capture))))))
+
+  (testing "Sends a notification when called with an ext exception"
+    (let [capture     (atom nil)
+          log-capture (atom [])]
+      (with-redefs-fn {#'clojure.core/println               (fn [& args] (swap! log-capture conj (clojure.string/join " " args)))
+
+                       #'tea-alert.mailjet/send-error-alert (fn [sender ex]
+                                                              (is (= {:sender true} sender))
+                                                              (reset! capture ex))}
+        #(do
+           (handle-task-error {:storage true} {:sender true} (ex-info "Very bad error" {:cause (Exception. "Bad error!")}))
+           (is (= "Very bad error" (.getMessage @capture)))
+           (is (= ["Failed to execute task: Very bad error: Bad error!"] @log-capture)))))))
