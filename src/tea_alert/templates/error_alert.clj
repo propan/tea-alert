@@ -23,7 +23,10 @@
                 [:p {:style "padding: 0 0 5px 0; margin: 0;"}
                  "We've had a main B bus undervolt. I hope you know what it means:"]
                 [:p {:style "padding: 0 0 5px 0; margin: 0;"}
-                 (.getMessage ex)]]]
+                 (.getMessage ex)]
+                (when-let [cause (:cause (ex-data ex))]
+                  [:p {:style "padding: 0 0 5px 0; margin: 0;"}
+                   (.getMessage cause)])]]
               [:tr
                [:td {:bgcolor "#ffffff" :style "padding: 0 5px;"}
                 [:pre {:style "width: 680px; overflow: scroll; border: 1px solid #c0c0c0; padding: 5px 10px; line-height: 20px; background-color: #f0f0f0; font-size: 12px;"}
