@@ -1,5 +1,6 @@
 (ns tea-alert.scheduler-test
   (:require [clojure.test :refer :all]
+            [clj-time.core :as t]
             [tea-alert.scheduler :refer :all]))
 
 (def TEST_STORE_ITEMS
@@ -12,12 +13,62 @@
     :url    "http://www.store.com/shop"
     :parser (fn [page] TEST_STORE_ITEMS)}])
 
+(deftest update-throttle-test
+  (testing "Sets throttle to false when there is no known state"
+    (let [now (t/now)]
+      (is (= {:http-error {:ts now :throttle false}} (#'tea-alert.scheduler/update-throttle :http-error now {})))))
+
+  (testing "Sets throttle to true when there is an event within last hour"
+    (let [now    (t/now)
+          before (t/plus now (t/minutes -15))]
+      (is (= {:http-error {:ts now :throttle true}} (#'tea-alert.scheduler/update-throttle :http-error now {:http-error {:ts before :throttle false}})))))
+
+  (testing "Sets throttle to false when there is no event within last hour"
+    (let [now    (t/now)
+          before (t/plus now (t/minutes -61))]
+      (is (= {:http-error {:ts now :throttle false}} (#'tea-alert.scheduler/update-throttle :http-error now {:http-error {:ts before :throttle false}}))))))
+
+(deftest purge-throttle-test
+  (testing "Removes stale throttle values"
+    (let [now       (t/now)
+          threshold (t/plus now (t/minutes -60))]
+      (is (= {:ok-1 {:ts now}
+              :ok-2 {:ts now}}
+             (#'tea-alert.scheduler/purge-throttle threshold
+                                                   {:ok-1     {:ts now}
+                                                    :ok-2     {:ts now}
+                                                    :not-ok-1 {:ts (t/plus now (t/minutes -75))}
+                                                    :not-ok-2 {:ts (t/plus now (t/minutes -80))}}))))))
+
+(deftest throttle-test
+  (testing "Initial request is not throttled"
+    (with-redefs-fn {#'tea-alert.scheduler/ALERT_THROTTLE (atom {})}
+      #(is (= false (throttle? "store" :parser)))))
+
+  (testing "Consequent requests are throttled"
+    (with-redefs-fn {#'tea-alert.scheduler/ALERT_THROTTLE (atom {})}
+      #(are [x y] (= x y)
+         false (throttle? "store" :parser)
+         true  (throttle? "store" :parser)
+         false (throttle? "store" :http)
+         true  (throttle? "store" :parser)
+         true  (throttle? "store" :http))))
+
+  (testing "Requests are not throttled after threshold"
+    (with-redefs-fn {#'tea-alert.scheduler/ALERT_THROTTLE (atom {(keyword (str :parser "-" "store")) {:ts (t/plus (t/now) (t/minutes -65))}
+                                                                 (keyword (str :http "-" "store"))   {:ts (t/plus (t/now) (t/minutes -75))}})}
+      #(are [x y] (= x y)
+         false (throttle? "store" :parser)
+         false (throttle? "store" :http)
+         true  (throttle? "store" :parser)
+         true  (throttle? "store" :http)))))
+
 (deftest fetch-listed-test
   (testing "Returns an empty list when fetching fails"
     (with-redefs-fn {#'clj-http.client/get (fn [url options]
                                              (is (= {:insecure? true :socket-timeout 10000 :conn-timeout 10000 :conn-request-timeout 10000} options))
                                              (throw (Exception. "Troubles!")))}
-      #(is (thrown-with-msg? Exception #"Failed to fetch listings from Test Store: Troubles!" (fetch-listed (first TEST_STORES))))))
+      #(is (thrown-with-msg? Exception #"Failed to fetch listings from 'Test Store'" (fetch-listed (first TEST_STORES))))))
 
   (testing "Returns result of the parser"
     (with-redefs-fn {#'clj-http.client/get (fn [url options]
@@ -29,7 +80,7 @@
   (testing "Throws an exception when parser returns no items"
     (with-redefs-fn {#'tea-alert.scheduler/fetch-listed (constantly nil)
                      #'tea-alert.storage/read-items     (fn [storage key] #{"3e0564120f97ff822d1b1b4a0cccb8d5"})}
-      #(is (thrown-with-msg? Exception #"Parser issue: no items returned" (process-store {:storage true} (first TEST_STORES))))))
+      #(is (thrown-with-msg? Exception #"'Test Store' parser returned no items" (process-store {:storage true} (first TEST_STORES))))))
 
   (testing "Returns new items when they are detected"
     (with-redefs-fn {#'tea-alert.scheduler/fetch-listed (fn [conf]
@@ -101,7 +152,7 @@
            (check-for-updates {:storage true} {:buffer true} (fn [ex] (reset! error-capture ex)))
            (is (= [{:name "Bitterleaf Teas" :items ["bitterleafteas"]}
                    {:name "Cha Wang Shop" :items ["chawangshop"]}] @buffer-capture))
-           (is (= "Failed to crawl White2Tea store" (when-let [ex @error-capture] (.getMessage ex))))
+           (is (= "Failed to crawl 'White2Tea' store" (when-let [ex @error-capture] (.getMessage ex))))
            (is (= ["Crawling web-store pages"] @log-capture)))))))
 
 (deftest send-notifications-test
@@ -133,10 +184,12 @@
            (is (= ["No new items are found in the buffer"] @log-capture)))))))
 
 (deftest handle-task-error-test
-  (testing "Sends a notification when called with a generic exception"
+  (testing "Produces correct logs when called with a generic exception"
     (let [capture     (atom nil)
           log-capture (atom [])]
       (with-redefs-fn {#'clojure.core/println               (fn [& args] (swap! log-capture conj (clojure.string/join " " args)))
+
+                       #'tea-alert.scheduler/throttle?      (constantly false)
 
                        #'tea-alert.mailjet/send-error-alert (fn [sender ex]
                                                               (is (= {:sender true} sender))
@@ -146,10 +199,12 @@
            (is (= "Bad error!" (.getMessage @capture)))
            (is (= ["Failed to execute task: Bad error!"] @log-capture))))))
 
-  (testing "Sends a notification when called with an ext exception"
+  (testing "Produces correct logs when called with an ext exception"
     (let [capture     (atom nil)
           log-capture (atom [])]
       (with-redefs-fn {#'clojure.core/println               (fn [& args] (swap! log-capture conj (clojure.string/join " " args)))
+
+                       #'tea-alert.scheduler/throttle?      (constantly false)
 
                        #'tea-alert.mailjet/send-error-alert (fn [sender ex]
                                                               (is (= {:sender true} sender))
@@ -157,4 +212,16 @@
         #(do
            (handle-task-error {:storage true} {:sender true} (ex-info "Very bad error" {:cause (Exception. "Bad error!")}))
            (is (= "Very bad error" (.getMessage @capture)))
-           (is (= ["Failed to execute task: Very bad error: Bad error!"] @log-capture)))))))
+           (is (= ["Very bad error: Bad error!"] @log-capture))))))
+
+  (testing "Does not send a notification when throttle is closed"
+    (let [log-capture (atom [])]
+      (with-redefs-fn {#'clojure.core/println               (fn [& args] (swap! log-capture conj (clojure.string/join " " args)))
+
+                       #'tea-alert.scheduler/throttle?      (constantly true)
+
+                       #'tea-alert.mailjet/send-error-alert (fn [sender ex]
+                                                              (is false "This function should not be called"))}
+        #(do
+           (handle-task-error {:storage true} {:sender true} (ex-info "Very bad error" {:cause (Exception. "Bad error!")}))
+           (is (= ["Very bad error: Bad error!"] @log-capture)))))))

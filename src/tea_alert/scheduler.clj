@@ -15,6 +15,25 @@
             [tea-alert.buffer :as b]
             [tea-alert.mailjet :as m]))
 
+(defonce ALERT_THROTTLE (atom {}))
+
+(defn- update-throttle
+  [key now tm]
+  (if-let [current (key tm)]
+    (assoc tm key {:ts now :throttle (< (t/in-minutes (t/interval (:ts current) now)) 60)})
+    (assoc tm key {:ts now :throttle false})))
+
+(defn- purge-throttle
+  [threshold tm]
+  (reduce (fn [m [k {:keys [ts] :as v}]] (if (t/before? ts threshold) m (assoc m k v))) {} tm))
+
+(defn throttle?
+  [store type]
+  (let [key       (keyword (str type "-" store))
+        now       (t/now)
+        threshold (t/plus now (t/minutes -120))]
+    (get-in (swap! ALERT_THROTTLE #(->> % (purge-throttle threshold) (update-throttle key now))) [key :throttle])))
+
 (def STORES
   [{:name   "Bitterleaf Teas"
     :key    "bitterleafteas"
@@ -47,14 +66,16 @@
     :parser moychay/parse}])
 
 (defn fetch-listed
-  [{:keys [name url parser]}]
+  [{:keys [name key url parser]}]
   (try
     (-> url (client/get {:insecure?            true
                          :socket-timeout       10000
                          :conn-timeout         10000
                          :conn-request-timeout 10000}) :body enlive/html-snippet parser)
-    (catch Exception e
-      (throw (Exception. (str "Failed to fetch listings from " name ": " (.getMessage e)))))))
+    (catch Exception ex
+      (throw (ex-info (str "Failed to fetch listings from '" name "'") {:type  :http
+                                                                        :store key
+                                                                        :cause ex})))))
 
 (defn md5-hash
   [str]
@@ -70,7 +91,8 @@
         citems (fetch-listed config)
         nitems (filter (complement #(contains? pitems (md5-hash (:url %)))) citems)]
     (when-not (seq citems)
-      (throw (Exception. "Parser issue: no items returned")))
+      (throw (ex-info (str "'" name "' parser returned no items") {:type  :parser
+                                                                   :store key})))
     (when (seq nitems)
       (s/write-items storage key (->> citems (map :url) (map md5-hash))))
     {:name name :items nitems}))
@@ -104,8 +126,12 @@
                        (map (fn [store]
                               (try
                                 (process-store storage store)
-                                (catch Exception e
-                                  (error-fn (ex-info (str "Failed to crawl " (:name store) " store") {:cause e}))
+                                (catch Exception ex
+                                  (if-let [data (ex-data ex)]
+                                    (error-fn ex)
+                                    (error-fn (ex-info (str "Failed to crawl '" (:name store) "' store") {:type  :generic
+                                                                                                          :store (:key store)
+                                                                                                          :cause ex})))
                                   {:name (:name store) :items []}))))
                        (filter #(seq (:items %))))]
     (if (seq new-items)
@@ -121,11 +147,13 @@
 
 (defn handle-task-error
   [storage sender ex]
-  (if-let [cause (:cause (ex-data ex))]
-    (println "Failed to execute task:" (str (.getMessage ex) ":") (.getMessage cause))
-    (println "Failed to execute task:" (.getMessage ex)))
-  ;; TODO: throttle emails with errors per shop+error type
-  (m/send-error-alert sender ex))
+  (let [{:keys [cause type store] :or [type :generic store "unknown"]} (ex-data ex)]
+    (if (nil? cause)
+      (println "Failed to execute task:" (.getMessage ex))
+      (println (str (.getMessage ex) ":") (.getMessage cause)))
+    ;; send a notification only if the thottle is open
+    (when-not (throttle? store type)
+      (m/send-error-alert sender ex))))
 
 (defrecord Scheduler [storage buffer sender exit-chs]
   component/Lifecycle
