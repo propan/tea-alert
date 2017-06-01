@@ -15,25 +15,6 @@
             [tea-alert.buffer :as b]
             [tea-alert.mailjet :as m]))
 
-(defonce ALERT_THROTTLE (atom {}))
-
-(defn- update-throttle
-  [key now tm]
-  (if-let [current (key tm)]
-    (assoc tm key {:ts now :throttle (< (t/in-minutes (t/interval (:ts current) now)) 60)})
-    (assoc tm key {:ts now :throttle false})))
-
-(defn- purge-throttle
-  [threshold tm]
-  (reduce (fn [m [k {:keys [ts] :as v}]] (if (t/before? ts threshold) m (assoc m k v))) {} tm))
-
-(defn throttle?
-  [store type]
-  (let [key       (keyword (str type "-" store))
-        now       (t/now)
-        threshold (t/plus now (t/minutes -120))]
-    (get-in (swap! ALERT_THROTTLE #(->> % (purge-throttle threshold) (update-throttle key now))) [key :throttle])))
-
 (def STORES
   [{:name   "Bitterleaf Teas"
     :key    "bitterleafteas"
@@ -64,6 +45,25 @@
     :key    "moychay"
     :url    "https://moychay.com/catalog/new_products"
     :parser moychay/parse}])
+
+(defonce ALERT_THROTTLE (atom {}))
+
+(defn- update-throttle
+  [key now tm]
+  (if-let [current (key tm)]
+    (assoc tm key {:ts now :throttle (< (t/in-minutes (t/interval (:ts current) now)) 60)})
+    (assoc tm key {:ts now :throttle false})))
+
+(defn- purge-throttle
+  [threshold tm]
+  (reduce (fn [m [k {:keys [ts] :as v}]] (if (t/before? ts threshold) m (assoc m k v))) {} tm))
+
+(defn throttle?
+  [store type]
+  (let [key       (keyword (str type "-" store))
+        now       (t/now)
+        threshold (t/plus now (t/minutes -120))]
+    (get-in (swap! ALERT_THROTTLE #(->> % (purge-throttle threshold) (update-throttle key now))) [key :throttle])))
 
 (defn fetch-listed
   [{:keys [name key url parser]}]

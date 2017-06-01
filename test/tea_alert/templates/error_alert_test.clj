@@ -4,12 +4,13 @@
 
 (deftest render-test
   (testing "Renders correctly a regular exception"
-    (let [message (render (Exception. "Things are not always great."))]
-      (is (clojure.string/includes? message "Things are not always great."))
+    (let [message (render (Exception. "Things are not always great"))]
+      (is (clojure.string/includes? message "Things are not always great"))
+      (is (clojure.string/includes? message "tea_alert.templates.error_alert_test"))
       (is (clojure.string/includes? message "tea_alert.templates.error_alert_test"))))
 
-  (testing "Renders correctly a regular exception"
-    (let [message (render (ex-info "Other things might be great." {:cause (Exception. "Things are not always great.")}))]
-      (is (clojure.string/includes? message "Other things might be great."))
-      (is (clojure.string/includes? message "Things are not always great."))
-      (is (clojure.string/includes? message "tea_alert.templates.error_alert_test")))))
+  (testing "Renders correctly an ex-info exception"
+    (let [message (render (ex-info "Other things might be great" {:cause (Exception. "Things are not always great")}))]
+      (is (clojure.string/includes? message "Other things might be great"))
+      (is (clojure.string/includes? message "Things are not always great"))
+      (is (not (clojure.string/includes? message "tea_alert.templates.error_alert_test"))))))
