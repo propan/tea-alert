@@ -13,7 +13,7 @@
         old-value)
       (recur atm new-value))))
 
-(defrecord S3Buffer [data driver]
+(defrecord Buffer [data driver]
   component/Lifecycle
 
   (start [component]
@@ -28,7 +28,7 @@
 
 (defn create-buffer
   [driver]
-  (map->S3Buffer {:driver driver}))
+  (map->Buffer {:driver driver}))
 
 (defn put!
   [{:keys [data]} items]
