@@ -1,34 +1,7 @@
 (ns tea-alert.buffer
   (:refer-clojure :exclude [peek])
-  (:require [amazonica.aws.s3 :as s3]
-            [com.stuartsierra.component :as component]
-            [clojure.java.io :as io]))
-
-(defn- s3-save-data
-  [data]
-  (let [data (-> (pr-str data) (.getBytes "UTF-8"))]
-    (try
-      (s3/put-object {:endpoint "eu-west-1"}
-                     :bucket-name "h-storage"
-                     :key "tea-alert/buffer.edn"
-                     :input-stream (java.io.ByteArrayInputStream. data)
-                     :metadata {:content-length (alength data)})
-      (catch Exception e
-        (println "Failed to upload buffer data to S3: " (.getMessage e))))
-    data))
-
-(defn- s3-fetch-data
-  []
-  (try
-    (-> (s3/get-object {:endpoint "eu-west-1"}
-                       :bucket-name "h-storage"
-                       :key "tea-alert/buffer.edn")
-        :input-stream
-        (slurp)
-        (read-string))
-    (catch Exception e
-      (println "Failed to fetch buffer data from S3: " (.getMessage e))
-      {})))
+  (:require [com.stuartsierra.component :as component]
+            [tea-alert.drivers :as d]))
 
 ;; TODO: remove when official implementation is available https://dev.clojure.org/jira/browse/CLJ-1454
 (defn- get-and-reset!
@@ -40,13 +13,13 @@
         old-value)
       (recur atm new-value))))
 
-(defrecord S3Buffer [data remote?]
+(defrecord S3Buffer [data driver]
   component/Lifecycle
 
-  (start [{:keys [remote?] :as component}]
-    (let [data (atom (if remote? (s3-fetch-data) {}))]
-      (when remote?
-        (add-watch data :s3-uploader #(s3-save-data %4)))
+  (start [component]
+    (let [data (atom (if (nil? driver) {} (d/load driver)))]
+      (when-not (nil? driver)
+        (add-watch data :s3-uploader #(d/save driver %4)))
       (assoc component :data data)))
 
   (stop [{:keys [data] :as component}]
@@ -54,8 +27,8 @@
     (assoc component :data nil)))
 
 (defn create-buffer
-  [remote?]
-  (map->S3Buffer {:remote? remote?}))
+  [driver]
+  (map->S3Buffer {:driver driver}))
 
 (defn put!
   [{:keys [data]} items]

@@ -2,6 +2,7 @@
   (:require [clojure.core.async :as async :refer [chan <!! close!]]
             [com.stuartsierra.component :as component]
             [tea-alert.buffer :refer [create-buffer]]
+            [tea-alert.drivers :refer [create-s3-driver]]
             [tea-alert.mailjet :refer [create-email-sender]]
             [tea-alert.storage :as s :refer [create-storage]]
             [tea-alert.scheduler :refer [create-scheduler]])
@@ -68,7 +69,7 @@
                (:sender-email config)
                (:recipients config)
                (:alert-recipients config))
-   :buffer    (create-buffer true)
+   :buffer    (-> (create-s3-driver "eu-west-1" "h-storage" "tea-alert/buffer.edn") (create-buffer))
    :scheduler (component/using
                (create-scheduler)
                [:storage :buffer :sender])
