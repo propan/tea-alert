@@ -73,7 +73,7 @@
    :scheduler (component/using
                (create-scheduler)
                [:storage :buffer :sender])
-   :storage   (create-storage)))
+   :storage   (-> (create-s3-driver "eu-west-1" "h-storage" "tea-alert/storage.edn") (create-storage))))
 
 (defonce system-instance nil)
 

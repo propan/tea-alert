@@ -89,12 +89,8 @@
                      #'tea-alert.storage/read-items     (fn [storage key]
                                                           (is (= storage {:storage true}))
                                                           (is (= key "test-store"))
-                                                          #{"3e0564120f97ff822d1b1b4a0cccb8d5"})
-                     #'tea-alert.storage/write-items    (fn [storage key items]
-                                                          (is (= storage {:storage true}))
-                                                          (is (= key "test-store"))
-                                                          (is (= items ["eeaa43c224b477e3fc644118231c8ebf" "3e0564120f97ff822d1b1b4a0cccb8d5"])))}
-      #(is (= {:name "Test Store" :items [(first TEST_STORE_ITEMS)]} (process-store {:storage true} (first TEST_STORES))))))
+                                                          #{"3e0564120f97ff822d1b1b4a0cccb8d5"})}
+      #(is (= {:name "Test Store" :key "test-store" :items [(first TEST_STORE_ITEMS)]} (process-store {:storage true} (first TEST_STORES))))))
 
   (testing "Returns no items when no changes detected"
     (with-redefs-fn {#'tea-alert.scheduler/fetch-listed (fn [conf]
@@ -103,55 +99,65 @@
                      #'tea-alert.storage/read-items     (fn [storage key]
                                                           (is (= storage {:storage true}))
                                                           (is (= key "test-store"))
-                                                          #{"eeaa43c224b477e3fc644118231c8ebf" "3e0564120f97ff822d1b1b4a0cccb8d5"})
-                     #'tea-alert.storage/write-items    (fn [storage key items]
-                                                          (is (= storage {:storage true}))
-                                                          (is (= key "test-store"))
-                                                          (is (= items [])))}
-      #(is (= {:name "Test Store" :items []} (process-store {:storage true} (first TEST_STORES)))))))
+                                                          #{"eeaa43c224b477e3fc644118231c8ebf" "3e0564120f97ff822d1b1b4a0cccb8d5"})}
+      #(is (= {:name "Test Store" :key "test-store" :items []} (process-store {:storage true} (first TEST_STORES)))))))
 
 (deftest check-for-updates-test
-  (testing "Stores new items to the buffer when new items are detected"
-    (let [capture     (atom nil)
-          log-capture (atom [])]
+  (testing "Stores new items to the buffer and storage when new items are detected"
+    (let [buf-capture     (atom nil)
+          storage-capture (atom nil)
+          log-capture     (atom [])]
       (with-redefs-fn {#'tea-alert.scheduler/process-store (fn [storage {:keys [key name]}]
                                                              (is (= {:storage true} storage))
                                                              (is (contains? #{"bitterleafteas" "chawangshop" "essenceoftea" "yunnansourcing" "white2tea" "moychay"} key))
-                                                             (let [items (if (contains? #{"bitterleafteas" "chawangshop"} key) [key] [])]
-                                                               {:name name :items items}))
+                                                             (let [items (if (contains? #{"bitterleafteas" "chawangshop"} key) [{:url key}] [])]
+                                                               {:name name :key key :items items}))
 
                        #'clojure.core/println              (fn [& args] (swap! log-capture conj (clojure.string/join " " args)))
 
                        #'tea-alert.buffer/put!             (fn [buffer items]
                                                              (is (= {:buffer true} buffer))
-                                                             (reset! capture items))}
+                                                             (reset! buf-capture items))
+
+                       #'tea-alert.storage/write-items     (fn [storage items]
+                                                             (is (= {:storage true} storage))
+                                                             (reset! storage-capture items))}
         #(do
            (check-for-updates {:storage true} {:buffer true} (fn [ex] (is false "Error function should not be called")))
-           (is (= [{:name "Bitterleaf Teas" :items ["bitterleafteas"]}
-                   {:name "Cha Wang Shop" :items ["chawangshop"]}] @capture))
+           (is (= [{:name "Bitterleaf Teas" :key "bitterleafteas" :items [{:url "bitterleafteas"}]}
+                   {:name "Cha Wang Shop" :key "chawangshop" :items [{:url "chawangshop"}]}] @buf-capture))
+           (is (= [{:name "Bitterleaf Teas" :key "bitterleafteas" :items ["79416e5e9b32667cb5e176d7be99e1d3"]}
+                   {:name "Cha Wang Shop" :key "chawangshop" :items ["2ed3975efbdcb9ac977021c209d131e7"]}] @storage-capture))
            (is (= ["Crawling web-store pages"] @log-capture))))))
 
   (testing "Notifies about errors if fetching fails"
-    (let [buffer-capture (atom nil)
-          error-capture  (atom nil)
-          log-capture    (atom [])]
+    (let [buf-capture     (atom nil)
+          storage-capture (atom nil)
+          error-capture   (atom nil)
+          log-capture     (atom [])]
       (with-redefs-fn {#'tea-alert.scheduler/process-store (fn [storage {:keys [key name]}]
                                                              (is (= {:storage true} storage))
                                                              (is (contains? #{"bitterleafteas" "chawangshop" "essenceoftea" "yunnansourcing" "white2tea" "moychay"} key))
                                                              (if (= "white2tea" key)
                                                                (throw (Exception. "Errors are unavoidable."))
-                                                               (let [items (if (contains? #{"bitterleafteas" "chawangshop"} key) [key] [])]
-                                                                 {:name name :items items})))
+                                                               (let [items (if (contains? #{"bitterleafteas" "chawangshop"} key) [{:url  key}] [])]
+                                                                 {:name name :key key :items items})))
 
                        #'clojure.core/println              (fn [& args] (swap! log-capture conj (clojure.string/join " " args)))
 
                        #'tea-alert.buffer/put!             (fn [buffer items]
                                                              (is (= {:buffer true} buffer))
-                                                             (reset! buffer-capture items))}
+                                                             (reset! buf-capture items))
+
+                       #'tea-alert.storage/write-items     (fn [storage items]
+                                                             (is (= {:storage true} storage))
+                                                             (reset! storage-capture items))}
         #(do
            (check-for-updates {:storage true} {:buffer true} (fn [ex] (reset! error-capture ex)))
-           (is (= [{:name "Bitterleaf Teas" :items ["bitterleafteas"]}
-                   {:name "Cha Wang Shop" :items ["chawangshop"]}] @buffer-capture))
+           (is (= [{:name "Bitterleaf Teas" :key "bitterleafteas" :items [{:url "bitterleafteas"}]}
+                   {:name "Cha Wang Shop" :key "chawangshop" :items [{:url "chawangshop"}]}] @buf-capture))
+           (is (= [{:name "Bitterleaf Teas" :key "bitterleafteas" :items ["79416e5e9b32667cb5e176d7be99e1d3"]}
+                   {:name "Cha Wang Shop" :key "chawangshop" :items ["2ed3975efbdcb9ac977021c209d131e7"]}] @storage-capture))
            (is (= "Failed to crawl 'White2Tea' store" (when-let [ex @error-capture] (.getMessage ex))))
            (is (= ["Crawling web-store pages"] @log-capture)))))))
 

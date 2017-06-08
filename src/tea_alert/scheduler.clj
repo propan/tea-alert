@@ -93,9 +93,7 @@
     (when-not (seq citems)
       (throw (ex-info (str "'" name "' parser returned no items") {:type  :parser
                                                                    :store key})))
-    (when (seq nitems)
-      (s/write-items storage key (->> citems (map :url) (map md5-hash))))
-    {:name name :items nitems}))
+    {:name name :key key :items nitems}))
 
 (defn interval-ms
   [start end]
@@ -123,19 +121,22 @@
   [storage buffer error-fn]
   (println "Crawling web-store pages")
   (let [new-items (->> STORES
-                       (map (fn [store]
+                       (map (fn [{:keys [key name] :as store}]
                               (try
                                 (process-store storage store)
                                 (catch Exception ex
                                   (if-let [data (ex-data ex)]
                                     (error-fn ex)
-                                    (error-fn (ex-info (str "Failed to crawl '" (:name store) "' store") {:type  :generic
-                                                                                                          :store (:key store)
-                                                                                                          :cause ex})))
-                                  {:name (:name store) :items []}))))
+                                    (error-fn (ex-info (str "Failed to crawl '" name "' store") {:type  :generic
+                                                                                                 :store key
+                                                                                                 :cause ex})))
+                                  {:name name :key key :items []}))))
                        (filter #(seq (:items %))))]
     (if (seq new-items)
-      (b/put! buffer new-items)
+      (do
+        (s/write-items storage (map (fn [data]
+                                      (update data :items #(->> % (map :url) (mapv md5-hash)))) new-items))
+        (b/put! buffer new-items))
       (println "No new items are found"))))
 
 (defn send-notifications
