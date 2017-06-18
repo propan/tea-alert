@@ -66,13 +66,13 @@
 (deftest fetch-listed-test
   (testing "Returns an empty list when fetching fails"
     (with-redefs-fn {#'clj-http.client/get (fn [url options]
-                                             (is (= {:insecure? true :socket-timeout 10000 :conn-timeout 10000 :conn-request-timeout 10000} options))
+                                             (is (= {:insecure? true :socket-timeout 15000 :conn-timeout 15000 :conn-request-timeout 15000} options))
                                              (throw (Exception. "Troubles!")))}
       #(is (thrown-with-msg? Exception #"Failed to fetch listings from 'Test Store'" (fetch-listed (first TEST_STORES))))))
 
   (testing "Returns result of the parser"
     (with-redefs-fn {#'clj-http.client/get (fn [url options]
-                                             (is (= {:insecure? true :socket-timeout 10000 :conn-timeout 10000 :conn-request-timeout 10000} options))
+                                             (is (= {:insecure? true :socket-timeout 15000 :conn-timeout 15000 :conn-request-timeout 15000} options))
                                              {:body "something"})}
       #(is (= TEST_STORE_ITEMS (fetch-listed (first TEST_STORES)))))))
 

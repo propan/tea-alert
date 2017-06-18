@@ -69,9 +69,9 @@
   [{:keys [name key url parser]}]
   (try
     (-> url (client/get {:insecure?            true
-                         :socket-timeout       10000
-                         :conn-timeout         10000
-                         :conn-request-timeout 10000}) :body enlive/html-snippet parser)
+                         :socket-timeout       15000
+                         :conn-timeout         15000
+                         :conn-request-timeout 15000}) :body enlive/html-snippet parser)
     (catch Exception ex
       (throw (ex-info (str "Failed to fetch listings from '" name "'") {:type  :http
                                                                         :store key
