@@ -22,21 +22,20 @@
                  "Houston, we've had a problem."]
                 [:p {:style "padding: 0 0 5px 0; margin: 0;"}
                  "We've had a main B bus undervolt. I hope you know what it means:"]
-                [:p {:style "padding: 0 0 5px 0; margin: 0;"}
+                [:p {:style "padding: 0 0 5px 0; margin: 0; color: #ef6060; font-weight: 600;"}
                  (if-let [cause (:cause (ex-data ex))]
                    (str (.getMessage ex) ": " (.getMessage cause))
-                   (.getMessage ex))]]]
-              (when (nil? (ex-data ex))
+                   (or (.getMessage ex)
+                       (-> ex .getClass .getCanonicalName)))]]]
+              (when (and (nil? (ex-data ex)) (seq (.getStackTrace ex)))
                 [:tr
                  [:td {:bgcolor "#ffffff" :style "padding: 0 5px;"}
-                  [:pre {:style "width: 660px; overflow: scroll; border: 1px solid #c0c0c0; padding: 5px 10px; line-height: 20px; background-color: #f0f0f0; font-size: 12px;"}
+                  [:pre {:style "width: 660px; overflow: scroll; border: 1px solid #c0c0c0; padding: 5px 10px; margin: 6px 8px; line-height: 20px; background-color: #f0f0f0; font-size: 12px;"}
                    (->> ex (.getStackTrace) (map str) (clojure.string/join "\n"))]]])
               [:tr
-               [:td {:bgcolor "#ffffff" :style "font-family: sans-serif; font-size: 14px; padding: 20px 13px 10px 13px; color: #464646; line-height: 20px;"}
+               [:td {:bgcolor "#ffffff" :style "font-family: sans-serif; font-size: 14px; padding: 10px 13px 10px 13px; color: #464646; line-height: 20px;"}
                 [:p {:style "padding: 0 0 5px 0; margin: 0;"}
                  "Always searching for you,"]
                 [:p {:style "padding: 0 0 5px 0; margin: 0; color: #444;"}
-                 "Tea Alert."]]]
-              [:tr
-               [:td {:style "padding: 20px 10px;"}]]])]]]))
+                 "Tea Alert."]]]])]]]))
 

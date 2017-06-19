@@ -13,4 +13,9 @@
     (let [message (render (ex-info "Other things might be great" {:cause (Exception. "Things are not always great")}))]
       (is (clojure.string/includes? message "Other things might be great"))
       (is (clojure.string/includes? message "Things are not always great"))
+      (is (not (clojure.string/includes? message "tea_alert.templates.error_alert_test")))))
+
+  (testing "Renders correctly an exception without a stack trace"
+    (let [message (render (doto (NullPointerException.) (.setStackTrace (into-array java.lang.StackTraceElement []))))]
+      (is (clojure.string/includes? message "java.lang.NullPointerException"))
       (is (not (clojure.string/includes? message "tea_alert.templates.error_alert_test"))))))
