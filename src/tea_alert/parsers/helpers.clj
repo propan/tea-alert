@@ -11,3 +11,7 @@
 (defn make-absolute-url
   [url base]
   (.toString  (.resolve (java.net.URI/create base) (java.net.URI/create url))))
+
+(defn ifnil
+  [s]
+  (or s ""))
