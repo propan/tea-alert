@@ -5,7 +5,8 @@
 
 (def TEST_STORE_ITEMS
   [{:image "http://store.com/1.jpg" :title "Tea #1" :url "http://store.com/1" :price "$20"}
-   {:image "http://store.com/2.jpg" :title "Tea #2" :url "http://store.com/2" :price "$10"}])
+   {:image "http://store.com/2.jpg" :title "Tea #2" :url "http://store.com/2" :price "$10"}
+   {:image "store.com/2.jpg"        :title "Broken" :url "store.com/2"        :price ""}])
 
 (def TEST_STORES
   [{:name   "Test Store"
@@ -62,6 +63,27 @@
          false (throttle? "store" :http)
          true  (throttle? "store" :parser)
          true  (throttle? "store" :http)))))
+
+(deftest valid-item-test
+  (let [valid-item {:image "http://store.com/item.jpg" :title "Item" :url "https://store.com/item" :price "$20"}]
+    (testing "Returns true for valid item"
+      (is (= true (#'tea-alert.scheduler/valid-item? valid-item))))
+
+    (testing "Returns false if :image is missing or invalid"
+      (is (= false (#'tea-alert.scheduler/valid-item? (dissoc valid-item :image))))
+      (is (= false (#'tea-alert.scheduler/valid-item? (assoc valid-item :image "store.com/item.jpg")))))
+
+    (testing "Returns false if :title is missing or blank"
+      (is (= false (#'tea-alert.scheduler/valid-item? (dissoc valid-item :title))))
+      (is (= false (#'tea-alert.scheduler/valid-item? (assoc valid-item :title "")))))
+
+    (testing "Returns false if :url is missing or blank"
+      (is (= false (#'tea-alert.scheduler/valid-item? (dissoc valid-item :url))))
+      (is (= false (#'tea-alert.scheduler/valid-item? (assoc valid-item :url "store.com/item")))))
+
+    (testing "Returns false if :price is missing or blank"
+      (is (= false (#'tea-alert.scheduler/valid-item? (dissoc valid-item :price))))
+      (is (= false (#'tea-alert.scheduler/valid-item? (assoc valid-item :price "")))))))
 
 (deftest fetch-listed-test
   (testing "Returns an empty list when fetching fails"

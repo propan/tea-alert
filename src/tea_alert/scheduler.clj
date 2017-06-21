@@ -46,7 +46,17 @@
     :url    "https://moychay.com/catalog/new_products"
     :parser moychay/parse}])
 
+(def ITEM_VALIDATORS
+  {:image #(and (string? %) (clojure.string/starts-with? % "http"))
+   :title #(and (string? %) (not (clojure.string/blank? %)))
+   :url   #(and (string? %) (clojure.string/starts-with? % "http"))
+   :price #(and (string? %) (not (clojure.string/blank? %)))})
+
 (defonce ALERT_THROTTLE (atom {}))
+
+(defn- valid-item?
+  [item]
+  (reduce (fn [r [k fn]] (if-not (-> item k fn) (reduced false) true)) false ITEM_VALIDATORS))
 
 (defn- update-throttle
   [key now tm]
@@ -88,7 +98,7 @@
 (defn process-store
   [storage {:keys [name key] :as config}]
   (let [pitems (s/read-items storage key)
-        citems (fetch-listed config)
+        citems (->> config fetch-listed (filter valid-item?))
         nitems (filter (complement #(contains? pitems (md5-hash (:url %)))) citems)]
     (when-not (seq citems)
       (throw (ex-info (str "'" name "' parser returned no items") {:type  :parser
