@@ -18,32 +18,32 @@
 (def STORES
   [{:name   "Bitterleaf Teas"
     :key    "bitterleafteas"
-    :url    "http://www.bitterleafteas.com/shop?orderby=date"
+    :urls   ["http://www.bitterleafteas.com/shop?orderby=date"]
     :parser bitterleafteas/parse}
    
    {:name   "Cha Wang Shop"
     :key    "chawangshop"
-    :url    "http://www.chawangshop.com/index.php/newest"
+    :urls   ["http://www.chawangshop.com/index.php/newest"]
     :parser chawangshop/parse}
 
    {:name   "The Essence of Tea"
     :key    "essenceoftea"
-    :url    "https://www.essenceoftea.com/new/"
+    :urls   ["https://www.essenceoftea.com/new/"]
     :parser essenceoftea/parse}
 
    {:name   "Yunnan Sourcing"
     :key    "yunnansourcing"
-    :url    "https://yunnansourcing.com/collections/new-products?sort_by=created-descending"
+    :urls   ["https://yunnansourcing.com/collections/new-products?sort_by=created-descending"]
     :parser yunnansourcing/parse}
 
    {:name   "White2Tea"
     :key    "white2tea"
-    :url    "http://white2tea.com"
+    :urls   ["http://white2tea.com"]
     :parser white2tea/parse}
 
    {:name   "MoyChay.RU"
     :key    "moychay"
-    :url    "https://moychay.com/catalog/new_products"
+    :urls   ["https://moychay.com/catalog/new_products"]
     :parser moychay/parse}])
 
 (def ITEM_VALIDATORS
@@ -75,8 +75,8 @@
         threshold (t/plus now (t/minutes -120))]
     (get-in (swap! ALERT_THROTTLE #(->> % (purge-throttle threshold) (update-throttle key now))) [key :throttle])))
 
-(defn fetch-listed
-  [{:keys [name key url parser]}]
+(defn fetch-listed-single
+  [name key url parser]
   (try
     (-> url (client/get {:insecure?            true
                          :socket-timeout       15000
@@ -86,6 +86,12 @@
       (throw (ex-info (str "Failed to fetch listings from '" name "'") {:type  :http
                                                                         :store key
                                                                         :cause ex})))))
+
+(defn fetch-listed
+  [{:keys [name key urls parser]}]
+  (->> urls
+       (map (fn [url] (fetch-listed-single name key url parser)))
+       (reduce concat)))
 
 (defn md5-hash
   [str]

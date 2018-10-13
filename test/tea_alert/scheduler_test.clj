@@ -11,7 +11,7 @@
 (def TEST_STORES
   [{:name   "Test Store"
     :key    "test-store"
-    :url    "http://www.store.com/shop"
+    :urls   ["http://www.store.com/shop/1" "http://www.store.com/shop/2"]
     :parser (fn [page] TEST_STORE_ITEMS)}])
 
 (deftest update-throttle-test
@@ -85,7 +85,7 @@
       (is (= false (#'tea-alert.scheduler/valid-item? (dissoc valid-item :price))))
       (is (= false (#'tea-alert.scheduler/valid-item? (assoc valid-item :price "")))))))
 
-(deftest fetch-listed-test
+(deftest fetch-listed-single-test
   (testing "Returns an empty list when fetching fails"
     (with-redefs-fn {#'clj-http.client/get (fn [url options]
                                              (is (= {:insecure? true :socket-timeout 15000 :conn-timeout 15000 :conn-request-timeout 15000} options))
@@ -96,6 +96,15 @@
     (with-redefs-fn {#'clj-http.client/get (fn [url options]
                                              (is (= {:insecure? true :socket-timeout 15000 :conn-timeout 15000 :conn-request-timeout 15000} options))
                                              {:body "something"})}
+      (let [{:keys [name key urls parser]} (first TEST_STORES)]
+        #(is (= TEST_STORE_ITEMS (fetch-listed-single name key (first urls) parser)))))))
+
+(deftest fetch-listed-test
+  (testing "Returns results fetched from multiple URLs"
+    (with-redefs-fn {#'tea-alert.scheduler/fetch-listed-single (fn [name key url parser]
+                                                                 (case url
+                                                                   "http://www.store.com/shop/1" (take 2 TEST_STORE_ITEMS)
+                                                                   "http://www.store.com/shop/2" (drop 2 TEST_STORE_ITEMS)))}
       #(is (= TEST_STORE_ITEMS (fetch-listed (first TEST_STORES)))))))
 
 (deftest process-store-test
