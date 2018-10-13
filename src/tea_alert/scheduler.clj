@@ -6,6 +6,7 @@
             [com.stuartsierra.component :as component]
             [net.cgrand.enlive-html :as enlive]
             [tea-alert.parsers.bitterleafteas :as bitterleafteas]
+            [tea-alert.parsers.badurov :as badurov]
             [tea-alert.parsers.chawangshop :as chawangshop]
             [tea-alert.parsers.essenceoftea :as essenceoftea]
             [tea-alert.parsers.moychay :as moychay]
@@ -44,7 +45,14 @@
    {:name   "MoyChay.RU"
     :key    "moychay"
     :urls   ["https://moychay.com/catalog/new_products"]
-    :parser moychay/parse}])
+    :parser moychay/parse}
+
+   {:name   "BaDuChay"
+    :key    "badurov"
+    :urls   ["http://badurov.ru/product-category/tea/krasnyj/?orderby=date"
+             "http://badurov.ru/product-category/tea/shen-puer/?orderby=date"
+             "http://badurov.ru/product-category/tea/shu-puer/?orderby=date"]
+    :parser badurov/parse}])
 
 (def ITEM_VALIDATORS
   {:image #(and (string? %) (clojure.string/starts-with? % "http"))

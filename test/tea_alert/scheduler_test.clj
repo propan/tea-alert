@@ -140,7 +140,7 @@
           log-capture     (atom [])]
       (with-redefs-fn {#'tea-alert.scheduler/process-store (fn [storage {:keys [key name]}]
                                                              (is (= {:storage true} storage))
-                                                             (is (contains? #{"bitterleafteas" "chawangshop" "essenceoftea" "yunnansourcing" "white2tea" "moychay"} key))
+                                                             (is (contains? #{"bitterleafteas" "chawangshop" "essenceoftea" "yunnansourcing" "white2tea" "moychay" "badurov"} key))
                                                              (let [items (if (contains? #{"bitterleafteas" "chawangshop"} key) [{:url key}] [])]
                                                                {:name name :key key :items items}))
 
@@ -168,7 +168,7 @@
           log-capture     (atom [])]
       (with-redefs-fn {#'tea-alert.scheduler/process-store (fn [storage {:keys [key name]}]
                                                              (is (= {:storage true} storage))
-                                                             (is (contains? #{"bitterleafteas" "chawangshop" "essenceoftea" "yunnansourcing" "white2tea" "moychay"} key))
+                                                             (is (contains? #{"bitterleafteas" "chawangshop" "essenceoftea" "yunnansourcing" "white2tea" "moychay" "badurov"} key))
                                                              (if (= "white2tea" key)
                                                                (throw (Exception. "Errors are unavoidable."))
                                                                (let [items (if (contains? #{"bitterleafteas" "chawangshop"} key) [{:url  key}] [])]
