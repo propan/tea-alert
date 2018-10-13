@@ -159,7 +159,7 @@
                    {:name "Cha Wang Shop" :key "chawangshop" :items [{:url "chawangshop"}]}] @buf-capture))
            (is (= [{:name "Bitterleaf Teas" :key "bitterleafteas" :items ["79416e5e9b32667cb5e176d7be99e1d3"]}
                    {:name "Cha Wang Shop" :key "chawangshop" :items ["2ed3975efbdcb9ac977021c209d131e7"]}] @storage-capture))
-           (is (= ["Crawling web-store pages"] @log-capture))))))
+           (is (= ["Crawling web-store pages" "Found 2 new items"] @log-capture))))))
 
   (testing "Notifies about errors if fetching fails"
     (let [buf-capture     (atom nil)
@@ -190,7 +190,7 @@
            (is (= [{:name "Bitterleaf Teas" :key "bitterleafteas" :items ["79416e5e9b32667cb5e176d7be99e1d3"]}
                    {:name "Cha Wang Shop" :key "chawangshop" :items ["2ed3975efbdcb9ac977021c209d131e7"]}] @storage-capture))
            (is (= "Failed to crawl 'White2Tea' store" (when-let [ex @error-capture] (.getMessage ex))))
-           (is (= ["Crawling web-store pages"] @log-capture)))))))
+           (is (= ["Crawling web-store pages" "Found 2 new items"] @log-capture)))))))
 
 (deftest send-notifications-test
   (testing "Sends notification if new items are detected"

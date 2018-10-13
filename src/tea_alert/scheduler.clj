@@ -28,7 +28,7 @@
 
    {:name   "The Essence of Tea"
     :key    "essenceoftea"
-    :urls   ["https://www.essenceoftea.com/new/"]
+    :urls   ["https://essenceoftea.com/collections/new-products?view=all"]
     :parser essenceoftea/parse}
 
    {:name   "Yunnan Sourcing"
@@ -150,6 +150,7 @@
                        (filter #(seq (:items %))))]
     (if (seq new-items)
       (do
+        (println (str "Found " (count new-items) " new items"))
         (s/write-items storage (map (fn [data]
                                       (update data :items #(->> % (map :url) (mapv md5-hash)))) new-items))
         (b/put! buffer new-items))
