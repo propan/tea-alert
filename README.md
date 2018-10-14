@@ -21,7 +21,7 @@ The service requires the following environment variables:
 
 ### AWS Permissions
 
-The AWS key used to access should give read/write permissions to `tea-alert/buffer.edn` file on S3.
+The AWS key used to access should give read/write permissions to `tea-alert/buffer.edn` and `tea-alert/storage.edn` file on S3.
 
 ## Usage
 
@@ -33,7 +33,7 @@ Run `lein test && lein uberjar && docker build -t tea-alert .`
 
 ## License
 
-Copyright © 2016-2017 Pavel Prokopenko
+Copyright © 2016-2018 Pavel Prokopenko
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
 
