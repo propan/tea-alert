@@ -5,16 +5,15 @@
 
 (defn- normalize-price
   [p]
-  (if-let [[price currency] (-> p (.replace "\u00a0" "_") (s/split #"_"))]
-    (str currency price)
-    "-")) 
+  (when-let [[price currency] (-> p (.replace "\u00a0" "_") (s/split #"_"))]
+    (str currency price))) 
 
 (defn- extract-item 
   [entry]
   {:image (extract-with entry [:.product :.product-loop-thumb :a :img] #(-> % :attrs :src))
    :title (extract-with entry [:.product :.mk-shop-item-detail :h3 :a] #(-> % :content first))
    :url   (extract-with entry [:.product :.mk-shop-item-detail :h3 :a] #(-> % :attrs :href))
-   :price (extract-with entry [:.product :.mk-shop-item-detail :.mk-price :.amount] #(-> % :content first normalize-price))})
+   :price (extract-with entry [:.product :.mk-shop-item-detail :.mk-price :.amount] #(-> % :content first ifnil normalize-price))})
 
 (defn parse
   [page]

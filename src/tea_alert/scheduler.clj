@@ -9,6 +9,7 @@
             [tea-alert.parsers.badurov :as badurov]
             [tea-alert.parsers.chawangshop :as chawangshop]
             [tea-alert.parsers.essenceoftea :as essenceoftea]
+            [tea-alert.parsers.farmer-leaf :as farmer-leaf]
             [tea-alert.parsers.moychay :as moychay]
             [tea-alert.parsers.yunnansourcing :as yunnansourcing]
             [tea-alert.parsers.white2tea :as white2tea]
@@ -47,12 +48,20 @@
     :urls   ["https://moychay.com/catalog/new_products"]
     :parser moychay/parse}
 
-   {:name   "BaDuChay"
+   {:name   "БаДу Чай"
     :key    "badurov"
     :urls   ["http://badurov.ru/product-category/tea/krasnyj/?orderby=date"
              "http://badurov.ru/product-category/tea/shen-puer/?orderby=date"
              "http://badurov.ru/product-category/tea/shu-puer/?orderby=date"]
-    :parser badurov/parse}])
+    :parser badurov/parse}
+
+   {:name   "Farmer Leaf"
+    :key    "farmerleaf"
+    :urls   ["https://www.farmer-leaf.com/collections/yunnan-black-tea"
+             "https://www.farmer-leaf.com/collections/ripe-pu-erh-tea"
+             "https://www.farmer-leaf.com/collections/tea-cakes"
+             "https://www.farmer-leaf.com/collections/loose-leaf-pu-erh"]
+    :parser farmer-leaf/parse}])
 
 (def ITEM_VALIDATORS
   {:image #(and (string? %) (clojure.string/starts-with? % "http"))
