@@ -59,8 +59,8 @@
     :key    "farmerleaf"
     :urls   ["https://www.farmer-leaf.com/collections/yunnan-black-tea"
              "https://www.farmer-leaf.com/collections/ripe-pu-erh-tea"
-             "https://www.farmer-leaf.com/collections/tea-cakes"
-             "https://www.farmer-leaf.com/collections/loose-leaf-pu-erh"]
+             "https://www.farmer-leaf.com/collections/yunnan-pu-erh-tea"
+             "https://www.farmer-leaf.com/collections/yunnan-white-tea"]
     :parser farmer-leaf/parse}])
 
 (def ITEM_VALIDATORS
