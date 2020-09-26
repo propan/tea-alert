@@ -4,12 +4,12 @@
 
 (defn- extract-item
   [entry]
-  {:image (extract-with entry [:.product-image-wrapper :img] #(-> % :attrs :src ifnil (make-absolute-url "http://white2tea.com")))
-   :title (extract-with entry [:.product-title :a] #(-> % :content first))
-   :url   (extract-with entry [:.product-title :a] #(-> % :attrs :href))
-   :price (extract-with entry [:.price :.amount] #(enlive/text %))})
+  {:image (extract-with entry [:.image-element__wrap :img] #(-> % :attrs :data-src ifnil (make-absolute-url "http://white2tea.com")))
+   :title (extract-with entry [:.product-details :.title] #(-> % :content first))
+   :url   (extract-with entry [:.product_image :a] #(-> % :attrs :href ifnil (make-absolute-url "http://white2tea.com")))
+   :price (extract-with entry [:.product-details :.money] #(enlive/text %))})
 
 (defn parse
   [page]
-  (->> (enlive/select page [:div.products-grid :.product])
+  (->> (enlive/select page [:div.product-wrap])
        (map extract-item)))
