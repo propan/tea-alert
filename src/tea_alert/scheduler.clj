@@ -48,13 +48,6 @@
     :urls   ["https://moychay.com/catalog/new_products"]
     :parser moychay/parse}
 
-   {:name   "БаДу Чай"
-    :key    "badurov"
-    :urls   ["http://badurov.ru/product-category/tea/krasnyj/?orderby=date"
-             "http://badurov.ru/product-category/tea/shen-puer/?orderby=date"
-             "http://badurov.ru/product-category/tea/shu-puer/?orderby=date"]
-    :parser badurov/parse}
-
    {:name   "Farmer Leaf"
     :key    "farmerleaf"
     :urls   ["https://www.farmer-leaf.com/collections/yunnan-black-tea"
