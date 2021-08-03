@@ -6,7 +6,7 @@
             [com.stuartsierra.component :as component]
             [net.cgrand.enlive-html :as enlive]
             [tea-alert.parsers.bitterleafteas :as bitterleafteas]
-            [tea-alert.parsers.badurov :as badurov]
+            [tea-alert.parsers.baduchai :as baduchai]
             [tea-alert.parsers.chawangshop :as chawangshop]
             [tea-alert.parsers.essenceoftea :as essenceoftea]
             [tea-alert.parsers.farmer-leaf :as farmer-leaf]
@@ -48,10 +48,25 @@
     :urls   ["https://moychay.com/catalog/new_products"]
     :parser moychay/parse}
 
+   {:name   "BaduChai.ru"
+    :key    "baduchai"
+    :urls   ["https://baduchai.ru/product-category/chaj/krasnyj/?orderby=date"
+             "https://baduchai.ru/product-category/chaj/shu-puer/?orderby=date"
+             "https://baduchai.ru/product-category/chaj/shen-puer/?orderby=date"
+             "https://baduchai.ru/product-category/chaj/te-guan-in/?orderby=date"
+             "https://baduchai.ru/product-category/chaj/zelenyj/?orderby=date"
+             "https://baduchai.ru/product-category/chaj/belyj/?orderby=date"
+             "https://baduchai.ru/product-category/chaj/ulun/chzhun-czzu-ho-glubokaya-prozharka/?orderby=date"
+             "https://baduchai.ru/product-category/chaj/ulun/kollekczionnye-utyosnye-uluny/?orderby=date"
+             "https://baduchai.ru/product-category/chaj/ulun/chetyre-znamenityh-chajnyh-kusta/?orderby=date"
+             "https://baduchai.ru/product-category/chaj/ulun/czin-ho-lyogkaya-prozharka/?orderby=date"]
+    :parser baduchai/parse}
+
    {:name   "Farmer Leaf"
     :key    "farmerleaf"
     :urls   ["https://www.farmer-leaf.com/collections/yunnan-black-tea"
              "https://www.farmer-leaf.com/collections/ripe-pu-erh-tea"
+             "https://www.farmer-leaf.com/collections/yunnan-oolong-tea"
              "https://www.farmer-leaf.com/collections/yunnan-pu-erh-tea"
              "https://www.farmer-leaf.com/collections/yunnan-white-tea"]
     :parser farmer-leaf/parse}])

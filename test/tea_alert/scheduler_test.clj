@@ -147,6 +147,7 @@
                                                                               "white2tea"
                                                                               "moychay"
                                                                               "badurov"
+                                                                              "baduchai"
                                                                               "farmerleaf"} key))
                                                              (let [items (if (contains? #{"bitterleafteas" "chawangshop"} key) [{:url key}] [])]
                                                                {:name name :key key :items items}))
@@ -182,6 +183,7 @@
                                                                               "white2tea"
                                                                               "moychay"
                                                                               "badurov"
+                                                                              "baduchai"
                                                                               "farmerleaf"} key))
                                                              (if (= "white2tea" key)
                                                                (throw (Exception. "Errors are unavoidable."))
